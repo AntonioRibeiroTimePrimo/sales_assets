@@ -11,6 +11,7 @@ não há código de aplicação.
 | `produtos/` | Marcas/produtos | nome do produto em minúsculas, ex: `portfel.jpg` |
 | `flags/` | Bandeiras de países | país em português, ex: `brasil.svg` |
 | `sino/` | Vídeos de celebração | — |
+| `scripts_venda/` | Imagens enviadas dentro de um script de venda (extensao `script_personalizado`, mensagem `[imagem]<url>`) | `<produto>_<assunto>.jpg`, ex: `l2x_pilares.jpg` |
 
 Fotos de vendedor são sempre `.jpg`. Se o original vier em WebP/PNG, converta
 antes de commitar (o script abaixo faz isso).
