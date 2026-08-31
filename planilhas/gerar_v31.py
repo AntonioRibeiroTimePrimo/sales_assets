@@ -252,16 +252,31 @@ for label, v in (('do arquivo', do_arquivo), ('encurtados agora', novos_usados),
                  ('inativos (so PMP)', inativos), ('sem cadastro no BQ', sem_cadastro)):
     print('%-20s %2d  %s' % (label, len(v), sorted(set(v))))
 
+# ------------------------------------------- 3b. Closers: fcia / atia / fce
+# Uma linha por (closer ativo x e-mail x oferta). Os links foram encurtados em
+# 31/08/2026 e todos os 320 conferidos por redirect (ver gera_links.py/audita.py).
+from copy import copy as _copy
+extra = json.load(open('closers_extra.json', encoding='utf-8'))
+prim = ws.max_row + 1
+while any(ws.cell(row=prim - 1, column=c).value in (None, '') for c in (1,)) and prim > 2:
+    prim -= 1
+for i, linha in enumerate(extra):
+    r = prim + i
+    for c in range(1, 11):
+        ws.cell(row=r, column=c)._style = _copy(ws.cell(row=2, column=c)._style)
+        ws.cell(row=r, column=c).value = linha[c - 1]
+print('linhas novas na aba Closers:', len(extra), '(a partir da linha %d)' % prim)
+
 # ---------------------------------------------------------------- 4. Leia-me
 ws = wb['Leia-me']
-ws.cell(row=1, column=1).value = 'PLANILHA "Script Personalizado" -- versao 30 (31/08/2026)'
+ws.cell(row=1, column=1).value = 'PLANILHA "Script Personalizado" -- versao 31 (31/08/2026)'
 last = ws.max_row
 while last > 1 and all(c.value in (None, '') for c in ws[last]):
     last -= 1
 
 TXT = """
 =======================================================================================
-VERSAO 30 -- ALTERACAO MANUAL (nao veio do gerar_planilha.py; regerar sobrescreve)
+VERSAO 31 -- ALTERACAO MANUAL (nao veio do gerar_planilha.py; regerar sobrescreve)
 =======================================================================================
 
 --- FPF Lista de Espera: fechamento virou SELETOR Aluno / Nao aluno --------------------
@@ -314,6 +329,47 @@ reclamou do pagamento, Boas-vindas e Cliente deu negativa. A aba ja estava atual
 A "[Abordagem Fale com Especialista]" que aparece no mesmo doc e a abertura da aba
 "FPF Especialista Script", que tambem ja estava correta. Os atalhos 2 e 3 (Perguntas e
 Perguntas opcionais) nao estao neste doc, mas vieram de doc anterior e foram mantidos.
+
+--- Closers: FCIA, ATIA e FCE ganharam linhas (antes a aba so tinha l2x e fpf) ---------
+As abas "FCIA Consultor IA Script", "ATIA Lancamento Script", "FCE SDR Script" e
+"FCE SDR Desq Script" existiam mas NENHUM closer tinha linha nesses produtos -- ou seja,
+[Closer], [Closer_artigo] e [link] saiam como placeholder cru pro cliente.
+
+Agora ha uma linha por (closer ativo x e-mail x oferta), para os 20 PMPs com
+is_active = true no BigQuery. Quando o vendedor tem cadastro CLT e PJ, os DOIS e-mails
+receberam linha (EZB, HMD, JKC), senao ele nao casa dependendo de com qual loga.
+
+  fcia  230 linhas  = 23 e-mails x 10 ofertas
+        ofertas (aba FIA0001): Checkout, 250OFF, 500OFF, 1000OFF, 1500OFF, e as
+        mesmas 5 na versao PI*. O rotulo fica na coluna Valor, ex "500OFF (R$ 6.688)".
+        Link_LP = a landing "Formacao Consultor de IA Checkout LP", igual em todas as
+        linhas do mesmo closer.
+        PMP: LAN-VIN-TVD-INT-BLAN-20260617-ORG-FIA0001-FIA-<PMP>
+
+  atia  115 linhas  = 23 e-mails x 5 ofertas
+        ofertas (aba ATIA0002): + Myhub Checkout, + myhub 100OFF,
+        + myhub 200OFF Alunos, Checkout, Checkout 100OFF. Sem landing, Link_LP vazio.
+        PMP: LAN-VIN-TVD-INT-BLAN-20260818-ORG-ATIA0002-ATIA-<PMP>
+
+  fce    23 linhas  = 23 e-mails, SEM link
+        os dois scripts do FCE nao usam [link], so [Closer] e [Nome]. A linha existe
+        para o nome e o genero do closer resolverem.
+
+Dos 320 links de fcia/atia, 153 ja existiam no "Links_Vendedores_2026_" e 167 foram
+encurtados agora. TODOS os 320 foram conferidos por redirect: src e sck batem com o PMP
+do vendedor.
+
+ERRO ENCONTRADO NO ARQUIVO DE LINKS: 12 links da aba FIA0001 estavam gravados com "ECL"
+no lugar de "FIA" no meio do PMP (ex ...-FIA0001-ECL-CCL). Isso quebra a atribuicao da
+venda. Foram refeitos com o PMP correto; a planilha aqui ja usa os novos. Vale corrigir
+tambem no arquivo de links, que segue com os antigos:
+  Checkout: FAL | 250OFF: BPS | 500OFF: CCL | 1000OFF: CCL, EZB, NCS
+  1500OFF: BPS, HLM, MDR | Checkout LP: FAL, JPP, NCS
+
+A aba FIA0001 tambem tem o PMP "JCK" (Jackson) em vez de JKC. As linhas geradas aqui
+usam JKC, que e o codigo do BigQuery.
+
+Vendedores inativos NAO receberam linha nesses 3 produtos.
 
 --- Closers: PMP e links de pagamento do FPF -------------------------------------------
 PMP: casado por E-MAIL com a tabela de vendedores do BigQuery
