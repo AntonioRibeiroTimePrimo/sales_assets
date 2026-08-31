@@ -125,20 +125,22 @@ JA_FALOU = (
 )
 
 BLOCOS = [
-    ('1', 'Abordagem',                                    ABORDAGEM,      'SIM'),
-    ('2', 'Atuação, cashback e gancho do desconto',        ATUACAO,        'SIM'),
-    ('3', 'Fechamento (Aluno / Não aluno)',                '[oferta_lista]','SIM'),
-    ('4', 'Não é aluno',                                   NAO_E_ALUNO,    'SIM'),
-    ('5', 'Link',                                          LINK,           'SIM'),
-    ('6', 'Já falou com o time (abertura alternativa)',     JA_FALOU,       'SIM'),
-    ('7', 'Fechamento — Não aluno (fallback sem seletor)',  FECH_NAO_ALUNO, 'NÃO'),
-    ('8', 'Fechamento — Aluno (fallback sem seletor)',      FECH_ALUNO,     'NÃO'),
+    ('1', 'Abordagem',                              ABORDAGEM,      'SIM'),
+    ('2', 'Atuação, cashback e gancho do desconto',  ATUACAO,        'SIM'),
+    ('3', 'Fechamento — NÃO aluno (R$500 off)',      FECH_NAO_ALUNO, 'SIM'),
+    ('4', 'Fechamento — ALUNO (R$1.000 off)',        FECH_ALUNO,     'SIM'),
+    ('5', 'Não é aluno',                             NAO_E_ALUNO,    'SIM'),
+    ('6', 'Link',                                    LINK,           'SIM'),
+    ('7', 'Já falou com o time (abertura alternativa)', JA_FALOU,    'SIM'),
 ]
 
 def clone_style(dst_row, src_row=2):
     for c in range(1, 6):
         ws.cell(row=dst_row, column=c)._style = copy(ws.cell(row=src_row, column=c)._style)
 
+for r in range(2, 12):                      # limpa a aba antes de reescrever
+    for c in range(1, 6):
+        ws.cell(row=r, column=c).value = None
 for i, (atalho, nome, texto, ativo) in enumerate(BLOCOS, start=2):
     clone_style(i)
     ws.cell(row=i, column=1).value = atalho
@@ -150,8 +152,8 @@ for i, (atalho, nome, texto, ativo) in enumerate(BLOCOS, start=2):
 # ---------------------------------------------------------------- 2. Seletores
 ws = wb['Seletores']
 for i, row in enumerate((
-    ('oferta_lista', 'fpf', 'Não aluno (R$500 off)', FECH_NAO_ALUNO, 1, 'SIM'),
-    ('oferta_lista', 'fpf', 'Aluno (R$1.000 off)',   FECH_ALUNO,     2, 'SIM'),
+    ('[oferta_lista]', 'fpf', 'Não aluno (R$500 off)', FECH_NAO_ALUNO, 1, 'NÃO'),
+    ('[oferta_lista]', 'fpf', 'Aluno (R$1.000 off)',   FECH_ALUNO,     2, 'NÃO'),
 ), start=2):
     for c, v in enumerate(row, start=1):
         ws.cell(row=i, column=c).value = v
@@ -269,29 +271,38 @@ print('linhas novas na aba Closers:', len(extra), '(a partir da linha %d)' % pri
 
 # ---------------------------------------------------------------- 4. Leia-me
 ws = wb['Leia-me']
-ws.cell(row=1, column=1).value = 'PLANILHA "Script Personalizado" -- versao 31 (31/08/2026)'
+ws.cell(row=1, column=1).value = 'PLANILHA "Script Personalizado" -- versao 32 (31/08/2026)'
 last = ws.max_row
 while last > 1 and all(c.value in (None, '') for c in ws[last]):
     last -= 1
 
 TXT = """
 =======================================================================================
-VERSAO 31 -- ALTERACAO MANUAL (nao veio do gerar_planilha.py; regerar sobrescreve)
+VERSAO 32 -- ALTERACAO MANUAL (nao veio do gerar_planilha.py; regerar sobrescreve)
 =======================================================================================
 
---- FPF Lista de Espera: fechamento virou SELETOR Aluno / Nao aluno --------------------
-Os dois docs novos ("FPF_Script_Lista_Aluno" e "FPF_Script_Lista_Nao_Aluno") sao o MESMO
-fluxo; o que muda entre eles e so o bloco de fechamento (o preco). Em vez de duas abas ou
-de uma segmentacao (nao ha campo no deal que diga se o lead e aluno antes da conversa), o
-fechamento virou um seletor que o closer escolhe na hora:
+--- FPF Lista de Espera: o SELETOR NAO FUNCIONOU, virou 2 atalhos ----------------------
+A v30 tentou resolver o Aluno/Nao aluno com o placeholder [oferta_lista] + a aba
+Seletores. Testado na extensao em 31/08/2026: NAO funciona -- o closer viu o literal
+"[oferta_lista]" na caixa de mensagem, sem nenhum seletor aparecer.
 
-  Atalho 3 "Fechamento (Aluno / Nao aluno)"  ->  texto = [oferta_lista]
-  aba Seletores, placeholder "oferta_lista", produto "fpf", 2 opcoes:
-    Nao aluno (R$500 off)   12x R$507 / R$5.097 a vista, e a pergunta "voce e aluno?"
-    Aluno (R$1.000 off)     de 12x R$507 por 12x R$405,50, validade so hoje
+Entao o fechamento voltou a ser texto normal, em DOIS atalhos que o closer escolhe:
+  3  Fechamento -- NAO aluno (R$500 off)    12x R$507 / R$5.097 a vista, e a pergunta
+                                            "voce e ou ja foi aluno do Grupo Primo?"
+  4  Fechamento -- ALUNO (R$1.000 off)      de 12x R$507 por 12x R$405,50, so hoje
 
 As duas condicoes estao certas e sao ofertas diferentes -- confirmado com o Antonio em
-31/08/2026. Quando a campanha acabar, desligar as 2 opcoes (coluna Ativo) e o atalho 3.
+31/08/2026. Quando a campanha acabar, desligar os atalhos 3 e 4.
+
+As 2 linhas da aba Seletores ficaram na planilha com Ativo = NAO, para nao atrapalhar.
+Se um dia for investigar por que o seletor nao pega, as hipoteses em ordem:
+  1. o Sincronizar com Supabase nao rodou depois de preencher a aba (checar primeiro);
+  2. a coluna Placeholder quer o token COM colchetes -- as linhas ja estao gravadas como
+     "[oferta_lista]" agora, era "oferta_lista" na v30 e v31;
+  3. o SyncScripts.gs le a aba mas a versao da extensao instalada nos closers ainda nao
+     desenha o seletor.
+Enquanto isso nao estiver resolvido, NAO usar placeholder de seletor em bloco nenhum: o
+que nao resolve vai cru pro cliente.
 
 --- FPF Lista de Espera: os blocos foram REAGRUPADOS ------------------------------------
 Regra aplicada: cada bloco termina num ponto real de [AGUARDAR RESPOSTA] do doc, nunca
@@ -316,8 +327,7 @@ outra, com a chamada "E disponibilizamos para hoje uma serie de bonus exclusivos
 ATENCAO ANTES DE AVISAR OS CLOSERS: esta e a primeira vez que a aba Seletores sai
 preenchida. Rode o preview/diag e confirme que [oferta_lista] e mesmo substituido -- se
 nao for, o closer manda o literal "[oferta_lista]" pro cliente. Se falhar, o plano B ja
-esta pronto: os atalhos 7 e 8 sao os dois fechamentos escritos por extenso, com
-Ativo = NAO. Basta ligar os dois e desligar o atalho 3.
+
 Se a coluna Placeholder esperar o token com colchetes, troque "oferta_lista" por
 "[oferta_lista]" nas 2 linhas da aba Seletores (a aba Fragmentos guarda o Slot sem
 colchetes, foi essa a convencao seguida aqui).
