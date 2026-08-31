@@ -43,23 +43,109 @@ FECH_ALUNO = (
     'Posso gerar seu link de inscrição?'
 )
 
-ws.cell(row=6, column=2).value = 'Fechamento (Aluno / Não aluno)'
-ws.cell(row=6, column=4).value = '[oferta_lista]'
+# --- blocos do fluxo, na ordem em que o closer usa ------------------------------
+# Regra: cada bloco termina num ponto real de [AGUARDAR RESPOSTA] do doc, nunca
+# numa pergunta retorica ("ok?", "certo?"). O doc tem 3 pontos de espera:
+# "Faz sentido ate aqui?", o fechamento, e "O que acha?".
+ABORDAGEM = (
+    'Oi, [Nome]! Eu sou [Closer_artigo] [Closer], especialista do Grupo Primo.\n'
+    '---\n'
+    'Prazer em te conhecer, vou te ajudar com suas dúvidas sobre a Formação de '
+    'Planejador Financeiro.\n'
+    '---\n'
+    'Vou te passar as principais informações e nossa condição válida somente hoje, ok?\n'
+    '---\n'
+    'A Formação de Planejador Financeiro é uma formação completa para quem quer '
+    'aprender a atuar em uma das profissões mais promissoras do mercado financeiro, '
+    'ajudando pessoas e famílias a organizarem a vida financeira com mais clareza, '
+    'estratégia e segurança.\n'
+    '---\n'
+    'Nessa turma, você garante:\n'
+    '• Formação completa de Planejador Financeiro;\n'
+    '• 30 horas de aulas gravadas, 100% online;\n'
+    '• Aulas semanais ao vivo para tirar dúvidas;\n'
+    '• Formação técnica, comercial e comportamental;\n'
+    '• Preparação para começar mesmo sem experiência prévia no mercado financeiro;\n'
+    '• Possibilidade de seguir para o processo de associação com a Grão, empresa de '
+    'planejamento financeiro do Grupo Primo;\n'
+    '• Acesso à metodologia usada por planejadores do ecossistema do Grupo Primo.\n'
+    '---\n'
+    'E disponibilizamos para hoje uma série de bônus exclusivos para acelerar sua '
+    'carreira como planejador:\n'
+    '• Curso Investidor em 33 Dias;\n'
+    '• Acesso ao Do Mil ao Milhão, do Thiago Nigro;\n'
+    '• 1 ano de Finclass;\n'
+    '• Curso Protocolo Zero Timidez - El Professor;\n'
+    '• Curso preparatório CPA pela TopInvest.\n'
+    '---\n'
+    'Depois de concluir a formação e cumprir os pré-requisitos, você pode seguir para '
+    'o processo de associação com a Grão, empresa de planejamento financeiro do Grupo '
+    'Primo.\n'
+    'Ou seja, você não precisa começar completamente sozinho!\n'
+    '---\n'
+    'Faz sentido até aqui?'
+)
+ATUACAO = (
+    'Lembrando que a atuação pode ser 100% remota e com flexibilidade de horários.\n'
+    '---\n'
+    'Ou seja, o Grupo Primo está interessado em formar profissionais que realmente '
+    'atuem e cresçam dentro da carreira, com a possibilidade real de remunerar '
+    'R$10.000 por mês dentro de 1 ano.\n'
+    '---\n'
+    'Além disso, existe a possibilidade de cashback da formação para quem se associar '
+    'ao Grupo Primo e alcançar 60 clientes ativos em até 12 meses!\n'
+    '---\n'
+    'E para o dia de hoje preparamos um desconto exclusivo na sua matrícula!'
+)
+NAO_E_ALUNO = (
+    'Entendi, [Nome]. Esse desconto de R$500 é uma condição exclusiva para quem já é '
+    'aluno do Grupo Primo.\n'
+    '---\n'
+    'Mas, se você tiver interesse em concluir agora, posso conversar com meu supervisor '
+    'e tentar liberar essa condição pra você também, pra gente finalizar sua inscrição '
+    'juntos.\n'
+    '---\n'
+    'O que acha?'
+)
+LINK = (
+    'Segue o link oficial para garantir sua inscrição na Formação de Planejador '
+    'Financeiro:\n'
+    '---\n'
+    '[link]\n'
+    '---\n'
+    'Assim que finalizar o pagamento, me avise, que te ajudo com os próximos passos. '
+    'Combinado?'
+)
+JA_FALOU = (
+    'Vi que você já conversou com o nosso time e chegou a avaliar a Formação de '
+    'Planejador Financeiro, mas acabou não avançando naquele momento.\n'
+    '---\n'
+    'Antes de te mostrar a condição que estamos trabalhando hoje, me conta: o que '
+    'acabou te impedindo de seguir naquele momento?'
+)
 
-def clone_style(dst_row, src_row=6):
+BLOCOS = [
+    ('1', 'Abordagem',                                    ABORDAGEM,      'SIM'),
+    ('2', 'Atuação, cashback e gancho do desconto',        ATUACAO,        'SIM'),
+    ('3', 'Fechamento (Aluno / Não aluno)',                '[oferta_lista]','SIM'),
+    ('4', 'Não é aluno',                                   NAO_E_ALUNO,    'SIM'),
+    ('5', 'Link',                                          LINK,           'SIM'),
+    ('6', 'Já falou com o time (abertura alternativa)',     JA_FALOU,       'SIM'),
+    ('7', 'Fechamento — Não aluno (fallback sem seletor)',  FECH_NAO_ALUNO, 'NÃO'),
+    ('8', 'Fechamento — Aluno (fallback sem seletor)',      FECH_ALUNO,     'NÃO'),
+]
+
+def clone_style(dst_row, src_row=2):
     for c in range(1, 6):
         ws.cell(row=dst_row, column=c)._style = copy(ws.cell(row=src_row, column=c)._style)
 
-for row, atalho, nome, texto in (
-    (9,  '8', 'Fechamento — Não aluno (fallback sem seletor)', FECH_NAO_ALUNO),
-    (10, '9', 'Fechamento — Aluno (fallback sem seletor)', FECH_ALUNO),
-):
-    clone_style(row)
-    ws.cell(row=row, column=1).value = atalho
-    ws.cell(row=row, column=2).value = nome
-    ws.cell(row=row, column=3).value = None
-    ws.cell(row=row, column=4).value = texto
-    ws.cell(row=row, column=5).value = 'NÃO'
+for i, (atalho, nome, texto, ativo) in enumerate(BLOCOS, start=2):
+    clone_style(i)
+    ws.cell(row=i, column=1).value = atalho
+    ws.cell(row=i, column=2).value = nome
+    ws.cell(row=i, column=3).value = None
+    ws.cell(row=i, column=4).value = texto
+    ws.cell(row=i, column=5).value = ativo
 
 # ---------------------------------------------------------------- 2. Seletores
 ws = wb['Seletores']
@@ -168,14 +254,14 @@ for label, v in (('do arquivo', do_arquivo), ('encurtados agora', novos_usados),
 
 # ---------------------------------------------------------------- 4. Leia-me
 ws = wb['Leia-me']
-ws.cell(row=1, column=1).value = 'PLANILHA "Script Personalizado" -- versao 29 (31/08/2026)'
+ws.cell(row=1, column=1).value = 'PLANILHA "Script Personalizado" -- versao 30 (31/08/2026)'
 last = ws.max_row
 while last > 1 and all(c.value in (None, '') for c in ws[last]):
     last -= 1
 
 TXT = """
 =======================================================================================
-VERSAO 29 -- ALTERACAO MANUAL (nao veio do gerar_planilha.py; regerar sobrescreve)
+VERSAO 30 -- ALTERACAO MANUAL (nao veio do gerar_planilha.py; regerar sobrescreve)
 =======================================================================================
 
 --- FPF Lista de Espera: fechamento virou SELETOR Aluno / Nao aluno --------------------
@@ -184,24 +270,39 @@ fluxo; o que muda entre eles e so o bloco de fechamento (o preco). Em vez de dua
 de uma segmentacao (nao ha campo no deal que diga se o lead e aluno antes da conversa), o
 fechamento virou um seletor que o closer escolhe na hora:
 
-  Atalho 5 "Fechamento (Aluno / Nao aluno)"  ->  texto = [oferta_lista]
+  Atalho 3 "Fechamento (Aluno / Nao aluno)"  ->  texto = [oferta_lista]
   aba Seletores, placeholder "oferta_lista", produto "fpf", 2 opcoes:
     Nao aluno (R$500 off)   12x R$507 / R$5.097 a vista, e a pergunta "voce e aluno?"
     Aluno (R$1.000 off)     de 12x R$507 por 12x R$405,50, validade so hoje
 
 As duas condicoes estao certas e sao ofertas diferentes -- confirmado com o Antonio em
-31/08/2026. Quando a campanha acabar, desligar as 2 opcoes (coluna Ativo) e o atalho 5.
+31/08/2026. Quando a campanha acabar, desligar as 2 opcoes (coluna Ativo) e o atalho 3.
 
-O atalho 6 ("Nao e aluno") continua sendo o follow-up do caminho Nao aluno.
-Os atalhos 1 a 4 e o 7 nao mudaram: conferidos linha a linha contra os dois docx, zero
-divergencia. A lista de bonus e a mesma nos dois docs (muda so a diagramacao), entao o
-bloco 3 seguiu unico.
+--- FPF Lista de Espera: os blocos foram REAGRUPADOS ------------------------------------
+Regra aplicada: cada bloco termina num ponto real de [AGUARDAR RESPOSTA] do doc, nunca
+numa pergunta retorica ("ok?"). O doc tem 3 pontos de espera -- "Faz sentido ate aqui?",
+o fechamento, e "O que acha?" -- entao a aba passou de 7 para 6 blocos:
+
+  1  Abordagem                              vai ate "Faz sentido ate aqui?"
+     (era o antigo bloco 1, que parava em "...somente hoje, ok?", + o bloco 3 inteiro
+      + a primeira metade do bloco 4)
+  2  Atuacao, cashback e gancho do desconto  (a segunda metade do antigo bloco 4)
+  3  Fechamento (Aluno / Nao aluno)          seletor
+  4  Nao e aluno                             follow-up do caminho Nao aluno
+  5  Link
+  6  Ja falou com o time (abertura alternativa)  -- era o atalho 2; nao esta nos docs
+     novos, veio de doc anterior, e foi pro fim por ser abertura alternativa, nao um
+     passo do meio do fluxo.
+
+A lista de bonus e a mesma nos dois docx (muda so a diagramacao). Ficou a diagramacao do
+doc de Aluno: os 7 itens do "Nessa turma, voce garante" numa mensagem e os 5 bonus em
+outra, com a chamada "E disponibilizamos para hoje uma serie de bonus exclusivos".
 
 ATENCAO ANTES DE AVISAR OS CLOSERS: esta e a primeira vez que a aba Seletores sai
 preenchida. Rode o preview/diag e confirme que [oferta_lista] e mesmo substituido -- se
 nao for, o closer manda o literal "[oferta_lista]" pro cliente. Se falhar, o plano B ja
-esta pronto: os atalhos 8 e 9 sao os dois fechamentos escritos por extenso, com
-Ativo = NAO. Basta ligar os dois e desligar o atalho 5.
+esta pronto: os atalhos 7 e 8 sao os dois fechamentos escritos por extenso, com
+Ativo = NAO. Basta ligar os dois e desligar o atalho 3.
 Se a coluna Placeholder esperar o token com colchetes, troque "oferta_lista" por
 "[oferta_lista]" nas 2 linhas da aba Seletores (a aba Fragmentos guarda o Slot sem
 colchetes, foi essa a convencao seguida aqui).
