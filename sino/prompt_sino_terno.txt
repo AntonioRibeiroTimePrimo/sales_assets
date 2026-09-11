@@ -8,7 +8,7 @@ DUAS COISAS QUE NAO SE PEDE NO PROMPT, PORQUE O FLOW NAO ENTREGA:
 
 1) AUDIO. Nao obedece. Na 1a tentativa o prompt pedia SILENCIO TOTAL e o video
    veio com 4 badaladas. O som certo entra depois, por cima, com o ffmpeg da
-   secao 5 - o que ele gerar de audio vai ser descartado de qualquer jeito.
+   secao 6 - o que ele gerar de audio vai ser descartado de qualquer jeito.
 
 2) A MAO AGARRANDO O BADALO. Nao resolve contato de mao com objeto pequeno.
    Na 1a tentativa a mao passava perto do badalo e voltava, sem nunca fechar,
@@ -67,7 +67,7 @@ Personagem e sino mudavam de       O push-in lento saiu. Camera travada,
 tamanho ao longo do plano          declarado duas vezes (no enquadramento e
                                    na linha de negativas).
 
-Cabelo e rosto mudavam entre       Menos tempo de plano (5 s, secao 3) - a
+Cabelo e rosto mudavam entre       Menos tempo de plano (5 s, secao 4) - a
 os frames                          instabilidade do Veo cresce com a duracao.
 
 Ultimos 2 s parados, sem o         O plano termina com o sino ainda
@@ -75,7 +75,34 @@ aceno prometido                    balancando e o punho erguido, que e um
                                    fim que se ve, nao um retorno ao neutro.
 
 -------------------------------------------------------------------------------
-3) AJUSTES NO FLOW
+3) APROVEITAR O VIDEO DA 1a TENTATIVA COMO ENTRADA
+-------------------------------------------------------------------------------
+
+O personagem da 1a tentativa ficou BOM - terno azul-marinho, gravata vermelha,
+cabelo blocado, escritorio desfocado. O que ficou ruim foi a acao e a posicao
+do sino. Entao vale reaproveitar a aparencia e jogar fora o movimento:
+
+SIM - como IMAGEM DE REFERENCIA (Ingredients / referencia de personagem).
+  Use os dois recortes desta pasta:
+    ref_terno_personagem.jpg  - so o homem de terno, sem o sino junto
+    ref_terno_sino.jpg        - so o sino, solto
+  Com eles o Flow mantem a identidade que voce ja aprovou e monta uma cena
+  NOVA a partir do texto - que e exatamente o que se quer, porque a cena e o
+  que precisa mudar. Os recortes sao propositalmente separados: numa imagem
+  so, a distancia errada entre o homem e o sino iria junto.
+
+NAO - como video pra ESTENDER (Extend / Jump to).
+  Isso so acrescenta segundos DEPOIS do clipe. Nao conserta nada do que ja
+  esta la: o gesto que erra o badalo e o sino alto e longe continuam no video,
+  e agora com mais tempo em cima.
+
+NAO - como FRAME INICIAL (Frames to Video).
+  O frame inicial trava a composicao, e a composicao e justamente o defeito.
+  Nenhum frame daquele video tem o sino ao alcance do braco - todos tem ele
+  acima da cabeca e longe. Comecar de qualquer um deles e herdar o erro.
+
+-------------------------------------------------------------------------------
+4) AJUSTES NO FLOW
 -------------------------------------------------------------------------------
 
 Duracao : o Flow entrega 8 s. Corte pra ~5 s. Na 1a tentativa os ultimos 2 s
@@ -94,7 +121,7 @@ Cenario : trocar o fundo e uma linha so. Substitua a que comeca com
             stands.
 
 -------------------------------------------------------------------------------
-4) VERSAO EM PORTUGUES (prefira a de cima)
+5) VERSAO EM PORTUGUES (prefira a de cima)
 -------------------------------------------------------------------------------
 
 Animacao 3D voxel estilo Minecraft. Personagens blocados, textura de pixel art
@@ -121,7 +148,7 @@ Sem texto, sem legenda, sem logo, sem marca d'agua, sem interface na tela, sem
 movimento de camera, sem zoom, sem corte.
 
 -------------------------------------------------------------------------------
-5) DEPOIS DE BAIXAR: TROCAR O AUDIO PELO SINO DE VERDADE
+6) DEPOIS DE BAIXAR: TROCAR O AUDIO PELO SINO DE VERDADE
 -------------------------------------------------------------------------------
 
 O sino.mp3 desta pasta e o som do video atual, ja isolado e normalizado.
@@ -147,7 +174,7 @@ o mp3 na 2a badalada pra nao soar mais sino do que se ve na tela:
   ffmpeg -i sino.mp3 -t 1.4 -af "afade=t=out:st=1.1:d=0.3" sino_2x.mp3
 
 -------------------------------------------------------------------------------
-6) ONDE O VIDEO ENTRA EM PRODUCAO
+7) ONDE O VIDEO ENTRA EM PRODUCAO
 -------------------------------------------------------------------------------
 
 Commite o mp4 nesta pasta com nome proprio (intro_social.mp4), sem sobrescrever

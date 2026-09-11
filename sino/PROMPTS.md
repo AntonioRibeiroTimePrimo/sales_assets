@@ -11,6 +11,8 @@ neste arquivo, para nao ter de reinventar o estilo a cada versao.
 | `sino_base64.txt` | O mesmo `sino.mp3` como **data URI** (`data:audio/mpeg;base64,...`), 48.287 caracteres, pronto pra colar em HTML/Apps Script | — | — |
 | `referencia_estilo.jpg` | Frame limpo do `intro.mp4` (marca d'agua cortada), pra usar como referencia de estilo no Flow | — | 1920x1010 |
 | `prompt_sino_terno.txt` | O prompt da versao de terno em texto puro, pronto pra abrir e copiar (mesmo conteudo das secoes abaixo) | — | — |
+| `ref_terno_personagem.jpg` | Recorte do homem de terno da 1a tentativa, **sem o sino junto** — referencia de personagem (Ingredients) pro Flow | frame de 6,3 s da v1 | 560x720 |
+| `ref_terno_sino.jpg` | Recorte do sino da 1a tentativa, solto — referencia de objeto pro Flow | frame de 1,0 s da v1 | 430x560 |
 
 ---
 
@@ -80,6 +82,21 @@ Vale pra qualquer video voxel gerado aqui, nao so pra este.
 
 **Gere 3 ou 4 do mesmo prompt e escolha.** A variacao entre execucoes e grande; a
 primeira saida nao e o teto do prompt.
+
+### Reaproveitar um video que nao ficou bom
+
+O personagem da v1 ficou BOM (terno azul-marinho, gravata vermelha, cabelo blocado,
+escritorio desfocado); o que falhou foi a acao e a posicao do sino. Da pra manter a
+aparencia e jogar fora o movimento — **mas so por um dos tres caminhos**:
+
+| Caminho | Vale? | Por que |
+| --- | --- | --- |
+| **Ingredients / referencia de personagem** | **Sim** | Mantem a identidade ja aprovada e monta uma cena NOVA a partir do texto — e a cena e justamente o que precisa mudar. Recortes prontos: `ref_terno_personagem.jpg` e `ref_terno_sino.jpg` |
+| Extend / Jump to | Nao | So acrescenta segundos DEPOIS do clipe. O gesto errado e o sino fora de alcance continuam la, agora com mais tempo em cima |
+| Frames to Video (frame inicial) | Nao | O frame inicial trava a composicao, e a composicao e o defeito. Nenhum frame da v1 tem o sino ao alcance do braco |
+
+**Os recortes sao dois arquivos separados de proposito.** Numa imagem so, a distancia
+errada entre o homem e o sino viaja junto com a referencia.
 
 ### Trocar so o cenario
 
