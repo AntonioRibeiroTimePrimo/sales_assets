@@ -10,6 +10,7 @@ neste arquivo, para nao ter de reinventar o estilo a cada versao.
 | `sino.mp3` | So o **audio** do sino, extraido do `intro.mp4`, cortado no ataque, normalizado a -16 LUFS e com fade-out | ffmpeg, a partir do `intro.mp4` | 2,95 s / mono 44,1 kHz / 96 kbps |
 | `sino_base64.txt` | O mesmo `sino.mp3` como **data URI** (`data:audio/mpeg;base64,...`), 48.287 caracteres, pronto pra colar em HTML/Apps Script | — | — |
 | `referencia_estilo.jpg` | Frame limpo do `intro.mp4` (marca d'agua cortada), pra usar como referencia de estilo no Flow | — | 1920x1010 |
+| `prompt_sino_terno.txt` | O prompt da versao de terno em texto puro, pronto pra abrir e copiar (mesmo conteudo das secoes abaixo) | — | — |
 
 ---
 
@@ -18,9 +19,18 @@ neste arquivo, para nao ter de reinventar o estilo a cada versao.
 Mesmo formato voxel do `intro.mp4`, mesmos movimentos, trocando o jogador de
 camisa da selecao por um homem de terno e gravata vermelha.
 
+> **NAO PECA O SOM NO PROMPT — o audio do Flow nao obedece a instrucao.** Ja
+> aconteceu antes aqui (relato do Antonio, 11/09/2026). O `intro_ufc.mp4` nao
+> saiu mudo: o audio dele tem pico em -0,7 dB. O problema e outro — o que sai
+> nao e o que foi pedido, e nao adianta reescrever a instrucao de audio. Por
+> isso o prompt abaixo pede **silencio**, e o sino real entra por cima depois,
+> com o `ffmpeg` da secao "Trocar o audio", que e deterministico.
+
 **Cole isto no Flow (texto -> video, 16:9).** Em ingles porque o Veo segue
-descricao de camera e de audio com muito mais fidelidade em ingles do que em
-portugues — o video nao tem fala, entao o idioma do prompt nao aparece na tela.
+descricao de camera com muito mais fidelidade em ingles do que em portugues —
+o video nao tem fala, entao o idioma do prompt nao aparece na tela.
+
+**Versao em `.txt`, pronta pra abrir e copiar: [`prompt_sino_terno.txt`](prompt_sino_terno.txt).**
 
 ```
 Minecraft-style low-poly voxel 3D animation. Chunky blocky characters, flat
@@ -41,8 +51,8 @@ ends.
 
 Background: a modern open-plan sales floor, completely out of focus.
 
-Audio: three loud, bright, resonant brass bell strikes with a long metallic
-decay, over faint distant office cheering. No music, no dialogue, no narration.
+Audio: complete silence. No music, no sound effects, no dialogue, no
+narration, no ambience.
 
 No text, no captions, no subtitles, no logos, no watermark, no on-screen UI,
 no camera shake, no cuts.
@@ -80,9 +90,8 @@ orgulhoso, pra camera. O sino ainda esta balancando quando o plano termina.
 
 Fundo: um escritorio moderno de time de vendas, totalmente desfocado.
 
-Audio: tres badaladas de latao altas, brilhantes e ressonantes, com cauda
-metalica longa, sobre uma comemoracao distante e abafada de escritorio. Sem
-musica, sem fala, sem narracao.
+Audio: silencio total. Sem musica, sem efeito sonoro, sem fala, sem narracao,
+sem ambiencia.
 
 Sem texto, sem legenda, sem logo, sem marca d'agua, sem interface na tela, sem
 tremida de camera, sem corte.
@@ -99,8 +108,25 @@ tremida de camera, sem corte.
   video longo e tela travada durante a comemoracao.
 - **Formato de saida:** 16:9, 1080p, mp4/h264. O `intro.mp4` tem 4,8 MB e passa; acima
   de ~8 MB o carregamento pela URL raw comeca a atrasar a primeira badalada nas TVs.
-- **O audio do Veo costuma sair fraco.** Se a badalada vier abafada, troque a trilha
-  pelo `sino.mp3` desta pasta (o sino do video atual, ja normalizado).
+### Trocar o audio pelo sino de verdade (passo obrigatorio)
+
+O `sino.mp3` desta pasta e o som do video de hoje, isolado e normalizado. Isto joga
+fora o audio que o Flow gerou e poe o sino no lugar, sem recomprimir a imagem:
+
+```bash
+ffmpeg -i video_do_flow.mp4 -i sino.mp3 \
+  -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k -shortest \
+  intro_social.mp4
+```
+
+Para a badalada cair no frame em que ele puxa o badalo, atrase o som com `-itsoffset`
+antes do segundo arquivo (exemplo com 1,5 s):
+
+```bash
+ffmpeg -i video_do_flow.mp4 -itsoffset 1.5 -i sino.mp3 \
+  -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k \
+  intro_social.mp4
+```
 
 ---
 

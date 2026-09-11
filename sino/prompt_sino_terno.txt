@@ -1,0 +1,128 @@
+===============================================================================
+PROMPT PARA O FLOW - SINO DE VENDAS, VERSAO "HOMEM DE TERNO"
+Mesmo formato voxel do sino atual (sino/intro.mp4), mesmos movimentos.
+===============================================================================
+
+NAO PECA O SOM NO PROMPT. O audio do Flow nao obedece a instrucao - o som certo
+entra depois, por cima, com o comando ffmpeg que esta no fim deste arquivo.
+Por isso o prompt abaixo pede SILENCIO: o que ele gerar de audio vai ser
+descartado de qualquer jeito.
+
+-------------------------------------------------------------------------------
+1) COLE ISTO NO FLOW (texto -> video, 16:9)
+-------------------------------------------------------------------------------
+
+Minecraft-style low-poly voxel 3D animation. Chunky blocky characters, flat
+pixel-art textures, thick dark outlines, soft sunny cartoon lighting, shallow
+depth of field with a heavily blurred background. Medium shot, camera locked
+off, very slow push-in over the whole shot.
+
+A blocky voxel businessman stands on the right third of the frame, facing
+camera: short dark blocky hair, dark navy business suit jacket, crisp white
+shirt, bright red tie. On the left third of the frame a large golden brass
+bell hangs from above at head height, with a heavy hanging clapper below it.
+
+He starts perfectly still with his arms down. He raises his right arm into
+frame, grabs the bell's clapper, and yanks it down three times in a row,
+swinging the bell hard from side to side. He keeps holding the clapper and
+gives one small proud nod to camera. The bell is still swinging when the shot
+ends.
+
+Background: a modern open-plan sales floor, completely out of focus.
+
+Audio: complete silence. No music, no sound effects, no dialogue, no
+narration, no ambience.
+
+No text, no captions, no subtitles, no logos, no watermark, no on-screen UI,
+no camera shake, no cuts.
+
+-------------------------------------------------------------------------------
+2) TROCAR SO O CENARIO
+-------------------------------------------------------------------------------
+
+Uma linha, o resto igual. Substitua a linha que comeca com "Background:":
+
+  Chao de vendas (o de cima):
+  Background: a modern open-plan sales floor, completely out of focus.
+
+  Palco escuro e dourado (identidade do dashboard gerencial):
+  Background: a dark broadcast stage with warm gold spotlights and drifting
+  haze, completely out of focus.
+
+  Estadio (mantem o clima do video atual):
+  Background: a sunny football stadium with a blurred crowd in the stands.
+
+-------------------------------------------------------------------------------
+3) VERSAO EM PORTUGUES (prefira a de cima)
+-------------------------------------------------------------------------------
+
+Animacao 3D voxel estilo Minecraft. Personagens blocados, textura de pixel art
+chapada, contorno escuro grosso, luz de desenho suave e ensolarada, pouca
+profundidade de campo com o fundo bem desfocado. Plano medio, camera fixa, com
+um leve avanco lento durante todo o plano.
+
+Um homem voxel de terno esta no terco direito do quadro, de frente pra camera:
+cabelo curto escuro blocado, palito azul-marinho, camisa branca e gravata
+vermelha viva. No terco esquerdo do quadro, um grande sino de latao dourado
+pendurado na altura da cabeca, com um badalo pesado embaixo.
+
+Ele comeca parado, bracos ao lado do corpo. Levanta o braco direito, agarra o
+badalo do sino e puxa tres vezes seguidas, fazendo o sino balancar forte de um
+lado pro outro. Continua segurando o badalo e da um leve aceno de cabeca,
+orgulhoso, pra camera. O sino ainda esta balancando quando o plano termina.
+
+Fundo: um escritorio moderno de time de vendas, totalmente desfocado.
+
+Audio: silencio total. Sem musica, sem efeito sonoro, sem fala, sem narracao,
+sem ambiencia.
+
+Sem texto, sem legenda, sem logo, sem marca d'agua, sem interface na tela, sem
+tremida de camera, sem corte.
+
+-------------------------------------------------------------------------------
+4) AJUSTES NO FLOW
+-------------------------------------------------------------------------------
+
+Duracao   : o Flow entrega 8 s. Corte pra ~5 s, no maximo 6. O overlay do
+            dashboard so revela o card da venda quando o video termina, entao
+            video longo trava a tela durante a comemoracao.
+Formato   : 16:9, 1080p, mp4/h264. O video atual tem 4,8 MB e passa bem; acima
+            de ~8 MB a primeira badalada comeca a atrasar nas TVs.
+Referencia: referencia_estilo.jpg (nesta pasta) e um frame limpo do video de
+            hoje, sem marca d'agua. Da pra usar como imagem de referencia de
+            estilo - mas ela carrega a camisa amarela junto. Se o terno nao
+            pegar, tire a referencia e va so de texto.
+
+-------------------------------------------------------------------------------
+5) DEPOIS DE BAIXAR: TROCAR O AUDIO PELO SINO DE VERDADE
+-------------------------------------------------------------------------------
+
+O sino.mp3 desta pasta e o som do video atual, ja isolado e normalizado.
+Este comando joga fora o audio que o Flow gerou e poe o sino no lugar:
+
+  ffmpeg -i video_do_flow.mp4 -i sino.mp3 \
+    -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k -shortest \
+    intro_social.mp4
+
+O -map 0:v pega so a imagem do video do Flow; o -map 1:a pega so o sino. O
+video nao e recomprimido (-c:v copy), entao nao perde qualidade e roda em
+segundos.
+
+Para a badalada cair no frame em que ele puxa o badalo, atrase o som com
+-itsoffset antes do segundo arquivo (exemplo com 1,5 s):
+
+  ffmpeg -i video_do_flow.mp4 -itsoffset 1.5 -i sino.mp3 \
+    -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k \
+    intro_social.mp4
+
+-------------------------------------------------------------------------------
+6) ONDE O VIDEO ENTRA EM PRODUCAO
+-------------------------------------------------------------------------------
+
+Commite o mp4 nesta pasta com nome proprio (intro_social.mp4), sem sobrescrever
+o intro.mp4 - assim da pra voltar atras mudando so uma chave.
+
+Dashboard gerencial : aba Config, chave sino_video. Troca sem deploy.
+Arena Lucro2X       : SINO_VIDEO_OUTROS / SINO_VIDEO_URL_LDX, em
+                      Dashboards/lucro2x/04_competicao_externa/Dados.gs.
+                      Esse exige colar no editor e redeployar o Apps Script.
