@@ -19,44 +19,67 @@ neste arquivo, para nao ter de reinventar o estilo a cada versao.
 Mesmo formato voxel do `intro.mp4`, mesmos movimentos, trocando o jogador de
 camisa da selecao por um homem de terno e gravata vermelha.
 
-> **NAO PECA O SOM NO PROMPT — o audio do Flow nao obedece a instrucao.** Ja
-> aconteceu antes aqui (relato do Antonio, 11/09/2026). O `intro_ufc.mp4` nao
-> saiu mudo: o audio dele tem pico em -0,7 dB. O problema e outro — o que sai
-> nao e o que foi pedido, e nao adianta reescrever a instrucao de audio. Por
-> isso o prompt abaixo pede **silencio**, e o sino real entra por cima depois,
-> com o `ffmpeg` da secao "Trocar o audio", que e deterministico.
+### Duas coisas que NAO se pede no prompt, porque o Flow nao entrega
+
+**1. O AUDIO.** Nao obedece. Medido em 11/09/2026: a v1 deste prompt pedia
+`complete silence` e o video voltou com **4 badaladas**. O `intro_ufc.mp4`, o outro
+video do Flow desta pasta, tem audio com pico em -0,7 dB — ou seja, o modelo tambem
+nao entrega mudo quando se pede. O som certo entra depois, por cima, com o `ffmpeg`
+da secao "Trocar o audio", que e deterministico. O que ele gerar de audio se descarta.
+
+**2. A MAO AGARRANDO O BADALO.** Contato de mao com objeto pequeno ele nao resolve.
+Na v1 a mao passava perto do badalo e voltava sem nunca fechar, enquanto o sino
+ficava **parado** — lia como tapa no ar. Por isso a acao virou **golpe**: punho
+fechado na lateral do sino, que e a mesma acao do `intro_ufc.mp4`, o unico video
+desta pasta que o Flow gerou bem.
 
 **Cole isto no Flow (texto -> video, 16:9).** Em ingles porque o Veo segue
 descricao de camera com muito mais fidelidade em ingles do que em portugues —
 o video nao tem fala, entao o idioma do prompt nao aparece na tela.
 
-**Versao em `.txt`, pronta pra abrir e copiar: [`prompt_sino_terno.txt`](prompt_sino_terno.txt).**
+**Versao em `.txt`, pronta pra abrir e copiar: [`prompt_sino_terno.txt`](prompt_sino_terno.txt)**
+(com a tabela defeito -> correcao da v1 para a v2).
 
 ```
 Minecraft-style low-poly voxel 3D animation. Chunky blocky characters, flat
-pixel-art textures, thick dark outlines, soft sunny cartoon lighting, shallow
-depth of field with a heavily blurred background. Medium shot, camera locked
-off, very slow push-in over the whole shot.
+pixel-art textures, thick dark outlines, soft cartoon lighting, shallow depth
+of field with a heavily blurred background. Medium shot. The camera is
+completely locked off and never moves or zooms.
 
-A blocky voxel businessman stands on the right third of the frame, facing
+A blocky voxel businessman stands on the right side of the frame, facing
 camera: short dark blocky hair, dark navy business suit jacket, crisp white
-shirt, bright red tie. On the left third of the frame a large golden brass
-bell hangs from above at head height, with a heavy hanging clapper below it.
+shirt, bright red tie. Directly beside him, at chest height and within easy
+arm's reach, a large golden brass bell hangs from a short black bracket.
 
-He starts perfectly still with his arms down. He raises his right arm into
-frame, grabs the bell's clapper, and yanks it down three times in a row,
-swinging the bell hard from side to side. He keeps holding the clapper and
-gives one small proud nod to camera. The bell is still swinging when the shot
-ends.
+He pulls his right arm back and swings it forward, striking the side of the
+bell hard with his closed fist. The bell rocks violently back and forth on its
+bracket, a burst of golden sparks flies off the impact point, and the bell
+keeps swinging until the end of the shot. He strikes it once more, then holds
+his fist up and smiles at camera.
 
 Background: a modern open-plan sales floor, completely out of focus.
 
-Audio: complete silence. No music, no sound effects, no dialogue, no
-narration, no ambience.
+Audio: none.
 
 No text, no captions, no subtitles, no logos, no watermark, no on-screen UI,
-no camera shake, no cuts.
+no camera movement, no zoom, no cuts.
 ```
+
+### Os 6 defeitos da v1, e o que mudou na v2
+
+Vale pra qualquer video voxel gerado aqui, nao so pra este.
+
+| Defeito | Correcao |
+| --- | --- |
+| Mao nunca agarrava o badalo; lia como tapa no ar | Golpe com punho fechado — sem contato fino pra resolver |
+| Sino ficava parado enquanto o braco se mexia | `rocks violently back and forth` + faisca no impacto: o movimento do sino virou a acao principal |
+| Sino longe e acima da cabeca, gesto impossivel | `at chest height and within easy arm's reach`, em suporte curto ao lado. Sino pendurado no alto traz o problema do badalo de volta |
+| Personagem e sino mudavam de tamanho no plano | O push-in lento saiu. Camera travada, declarado duas vezes |
+| Cabelo e rosto morfavam entre frames | Plano de 5 s — a instabilidade do Veo cresce com a duracao |
+| Ultimos 2 s parados, sem o aceno pedido | Termina com o sino balancando e o punho erguido: um fim que se ve |
+
+**Gere 3 ou 4 do mesmo prompt e escolha.** A variacao entre execucoes e grande; a
+primeira saida nao e o teto do prompt.
 
 ### Trocar so o cenario
 
@@ -74,27 +97,27 @@ Se preferir rodar em portugues, e este — mas prefira o de cima:
 
 ```
 Animacao 3D voxel estilo Minecraft. Personagens blocados, textura de pixel art
-chapada, contorno escuro grosso, luz de desenho suave e ensolarada, pouca
-profundidade de campo com o fundo bem desfocado. Plano medio, camera fixa, com
-um leve avanco lento durante todo o plano.
+chapada, contorno escuro grosso, luz de desenho suave, pouca profundidade de
+campo com o fundo bem desfocado. Plano medio. A camera fica totalmente travada
+e nunca se move nem da zoom.
 
-Um homem voxel de terno esta no terco direito do quadro, de frente pra camera:
+Um homem voxel de terno esta do lado direito do quadro, de frente pra camera:
 cabelo curto escuro blocado, palito azul-marinho, camisa branca e gravata
-vermelha viva. No terco esquerdo do quadro, um grande sino de latao dourado
-pendurado na altura da cabeca, com um badalo pesado embaixo.
+vermelha viva. Bem ao lado dele, na altura do peito e ao alcance do braco, um
+grande sino de latao dourado preso num suporte preto curto.
 
-Ele comeca parado, bracos ao lado do corpo. Levanta o braco direito, agarra o
-badalo do sino e puxa tres vezes seguidas, fazendo o sino balancar forte de um
-lado pro outro. Continua segurando o badalo e da um leve aceno de cabeca,
-orgulhoso, pra camera. O sino ainda esta balancando quando o plano termina.
+Ele puxa o braco direito pra tras e o lanca pra frente, acertando a lateral do
+sino com o punho fechado. O sino balanca com violencia pra frente e pra tras no
+suporte, uma explosao de faiscas douradas sai do ponto do impacto, e o sino
+continua balancando ate o fim do plano. Ele acerta mais uma vez, depois ergue o
+punho e sorri pra camera.
 
 Fundo: um escritorio moderno de time de vendas, totalmente desfocado.
 
-Audio: silencio total. Sem musica, sem efeito sonoro, sem fala, sem narracao,
-sem ambiencia.
+Audio: nenhum.
 
 Sem texto, sem legenda, sem logo, sem marca d'agua, sem interface na tela, sem
-tremida de camera, sem corte.
+movimento de camera, sem zoom, sem corte.
 ```
 
 ### Ajustes no Flow
@@ -103,11 +126,14 @@ tremida de camera, sem corte.
   video atual. Da pra jogar como ingrediente/imagem de referencia pra amarrar o look —
   mas ele carrega a camisa amarela junto, entao se o terno nao pegar, tire a referencia
   e va so de texto.
-- **Duracao:** o Flow entrega 8 s. **Corte pra ~5 s**, no maximo 6. O overlay do
-  dashboard so revela o card da venda quando o video termina (evento `ended`), entao
-  video longo e tela travada durante a comemoracao.
-- **Formato de saida:** 16:9, 1080p, mp4/h264. O `intro.mp4` tem 4,8 MB e passa; acima
-  de ~8 MB o carregamento pela URL raw comeca a atrasar a primeira badalada nas TVs.
+- **Duracao:** o Flow entrega 8 s. **Corte pra ~5 s**, no maximo 6. Na v1 os ultimos
+  2 s eram o personagem parado olhando pra camera. E o overlay do dashboard so revela
+  o card da venda quando o video termina (evento `ended`), entao video longo e tela
+  travada durante a comemoracao.
+- **Formato de saida:** 16:9, 1080p, mp4/h264. A v1 saiu em 1280x720 — peca 1080p pra
+  TV. O `intro.mp4` tem 4,8 MB e passa; acima de ~8 MB o carregamento pela URL raw
+  comeca a atrasar a primeira badalada nas TVs.
+
 ### Trocar o audio pelo sino de verdade (passo obrigatorio)
 
 O `sino.mp3` desta pasta e o som do video de hoje, isolado e normalizado. Isto joga
@@ -126,6 +152,13 @@ antes do segundo arquivo (exemplo com 1,5 s):
 ffmpeg -i video_do_flow.mp4 -itsoffset 1.5 -i sino.mp3 \
   -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k \
   intro_social.mp4
+```
+
+O `sino.mp3` tem ~6 badaladas em 2,95 s. Com um video de 2 golpes, corte o mp3 na 2a
+pra nao soar mais sino do que se ve na tela:
+
+```bash
+ffmpeg -i sino.mp3 -t 1.4 -af "afade=t=out:st=1.1:d=0.3" sino_2x.mp3
 ```
 
 ---

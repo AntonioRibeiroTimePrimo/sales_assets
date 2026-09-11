@@ -1,97 +1,124 @@
 ===============================================================================
 PROMPT PARA O FLOW - SINO DE VENDAS, VERSAO "HOMEM DE TERNO"
-Mesmo formato voxel do sino atual (sino/intro.mp4), mesmos movimentos.
+Mesmo formato voxel do sino atual (sino/intro.mp4).
+v2 - 11/09/2026, reescrito depois da 1a tentativa nao ficar boa.
 ===============================================================================
 
-NAO PECA O SOM NO PROMPT. O audio do Flow nao obedece a instrucao - o som certo
-entra depois, por cima, com o comando ffmpeg que esta no fim deste arquivo.
-Por isso o prompt abaixo pede SILENCIO: o que ele gerar de audio vai ser
-descartado de qualquer jeito.
+DUAS COISAS QUE NAO SE PEDE NO PROMPT, PORQUE O FLOW NAO ENTREGA:
+
+1) AUDIO. Nao obedece. Na 1a tentativa o prompt pedia SILENCIO TOTAL e o video
+   veio com 4 badaladas. O som certo entra depois, por cima, com o ffmpeg da
+   secao 5 - o que ele gerar de audio vai ser descartado de qualquer jeito.
+
+2) A MAO AGARRANDO O BADALO. Nao resolve contato de mao com objeto pequeno.
+   Na 1a tentativa a mao passava perto do badalo e voltava, sem nunca fechar,
+   e o sino ficava parado enquanto o braco se mexia - lia como se ele estivesse
+   dando tapa no ar. Por isso a acao virou GOLPE: ele bate no corpo do sino com
+   a mao fechada. E a mesma acao do intro_ufc.mp4, o unico video desta pasta
+   que o Flow gerou bem (lutador acertando o gongo).
 
 -------------------------------------------------------------------------------
 1) COLE ISTO NO FLOW (texto -> video, 16:9)
 -------------------------------------------------------------------------------
 
 Minecraft-style low-poly voxel 3D animation. Chunky blocky characters, flat
-pixel-art textures, thick dark outlines, soft sunny cartoon lighting, shallow
-depth of field with a heavily blurred background. Medium shot, camera locked
-off, very slow push-in over the whole shot.
+pixel-art textures, thick dark outlines, soft cartoon lighting, shallow depth
+of field with a heavily blurred background. Medium shot. The camera is
+completely locked off and never moves or zooms.
 
-A blocky voxel businessman stands on the right third of the frame, facing
+A blocky voxel businessman stands on the right side of the frame, facing
 camera: short dark blocky hair, dark navy business suit jacket, crisp white
-shirt, bright red tie. On the left third of the frame a large golden brass
-bell hangs from above at head height, with a heavy hanging clapper below it.
+shirt, bright red tie. Directly beside him, at chest height and within easy
+arm's reach, a large golden brass bell hangs from a short black bracket.
 
-He starts perfectly still with his arms down. He raises his right arm into
-frame, grabs the bell's clapper, and yanks it down three times in a row,
-swinging the bell hard from side to side. He keeps holding the clapper and
-gives one small proud nod to camera. The bell is still swinging when the shot
-ends.
+He pulls his right arm back and swings it forward, striking the side of the
+bell hard with his closed fist. The bell rocks violently back and forth on its
+bracket, a burst of golden sparks flies off the impact point, and the bell
+keeps swinging until the end of the shot. He strikes it once more, then holds
+his fist up and smiles at camera.
 
 Background: a modern open-plan sales floor, completely out of focus.
 
-Audio: complete silence. No music, no sound effects, no dialogue, no
-narration, no ambience.
+Audio: none.
 
 No text, no captions, no subtitles, no logos, no watermark, no on-screen UI,
-no camera shake, no cuts.
+no camera movement, no zoom, no cuts.
 
 -------------------------------------------------------------------------------
-2) TROCAR SO O CENARIO
+2) O QUE MUDOU DA v1, E POR QUE
 -------------------------------------------------------------------------------
 
-Uma linha, o resto igual. Substitua a linha que comeca com "Background:":
+Defeito da 1a tentativa            O que mudou no prompt
+---------------------------------  ------------------------------------------
+Mao nunca agarrava o badalo;       A acao virou GOLPE com o punho fechado no
+gesto lia como tapa no ar          corpo do sino. Sem contato fino pra
+                                   resolver.
 
-  Chao de vendas (o de cima):
-  Background: a modern open-plan sales floor, completely out of focus.
+Sino ficava parado enquanto o      "rocks violently back and forth" + faisca
+braco se mexia                     no ponto de impacto. O movimento do sino
+                                   virou a acao principal, nao consequencia.
 
-  Palco escuro e dourado (identidade do dashboard gerencial):
-  Background: a dark broadcast stage with warm gold spotlights and drifting
-  haze, completely out of focus.
+Sino longe e acima da cabeca,      "at chest height and within easy arm's
+gesto impossivel                   reach", preso num suporte curto ao lado
+                                   dele. Sino pendurado no alto convida o
+                                   problema do badalo de volta.
 
-  Estadio (mantem o clima do video atual):
-  Background: a sunny football stadium with a blurred crowd in the stands.
+Personagem e sino mudavam de       O push-in lento saiu. Camera travada,
+tamanho ao longo do plano          declarado duas vezes (no enquadramento e
+                                   na linha de negativas).
+
+Cabelo e rosto mudavam entre       Menos tempo de plano (5 s, secao 3) - a
+os frames                          instabilidade do Veo cresce com a duracao.
+
+Ultimos 2 s parados, sem o         O plano termina com o sino ainda
+aceno prometido                    balancando e o punho erguido, que e um
+                                   fim que se ve, nao um retorno ao neutro.
 
 -------------------------------------------------------------------------------
-3) VERSAO EM PORTUGUES (prefira a de cima)
+3) AJUSTES NO FLOW
+-------------------------------------------------------------------------------
+
+Duracao : o Flow entrega 8 s. Corte pra ~5 s. Na 1a tentativa os ultimos 2 s
+          eram o personagem parado olhando pra camera. Alem disso o overlay do
+          dashboard so revela o card da venda quando o video termina, entao
+          video longo trava a tela durante a comemoracao.
+Formato : 16:9, 1080p, mp4/h264. A 1a tentativa saiu em 1280x720; 1080p e
+          melhor pra TV. Ate ~8 MB esta bem.
+Tentativas: gere 3 ou 4 do MESMO prompt e escolha. Esse tipo de modelo varia
+          muito entre execucoes - a 1a saida nao e o teto do prompt.
+Cenario : trocar o fundo e uma linha so. Substitua a que comeca com
+          "Background:":
+            Background: a dark broadcast stage with warm gold spotlights and
+            drifting haze, completely out of focus.
+            Background: a sunny football stadium with a blurred crowd in the
+            stands.
+
+-------------------------------------------------------------------------------
+4) VERSAO EM PORTUGUES (prefira a de cima)
 -------------------------------------------------------------------------------
 
 Animacao 3D voxel estilo Minecraft. Personagens blocados, textura de pixel art
-chapada, contorno escuro grosso, luz de desenho suave e ensolarada, pouca
-profundidade de campo com o fundo bem desfocado. Plano medio, camera fixa, com
-um leve avanco lento durante todo o plano.
+chapada, contorno escuro grosso, luz de desenho suave, pouca profundidade de
+campo com o fundo bem desfocado. Plano medio. A camera fica totalmente travada
+e nunca se move nem da zoom.
 
-Um homem voxel de terno esta no terco direito do quadro, de frente pra camera:
+Um homem voxel de terno esta do lado direito do quadro, de frente pra camera:
 cabelo curto escuro blocado, palito azul-marinho, camisa branca e gravata
-vermelha viva. No terco esquerdo do quadro, um grande sino de latao dourado
-pendurado na altura da cabeca, com um badalo pesado embaixo.
+vermelha viva. Bem ao lado dele, na altura do peito e ao alcance do braco, um
+grande sino de latao dourado preso num suporte preto curto.
 
-Ele comeca parado, bracos ao lado do corpo. Levanta o braco direito, agarra o
-badalo do sino e puxa tres vezes seguidas, fazendo o sino balancar forte de um
-lado pro outro. Continua segurando o badalo e da um leve aceno de cabeca,
-orgulhoso, pra camera. O sino ainda esta balancando quando o plano termina.
+Ele puxa o braco direito pra tras e o lanca pra frente, acertando a lateral do
+sino com o punho fechado. O sino balanca com violencia pra frente e pra tras no
+suporte, uma explosao de faiscas douradas sai do ponto do impacto, e o sino
+continua balancando ate o fim do plano. Ele acerta mais uma vez, depois ergue o
+punho e sorri pra camera.
 
 Fundo: um escritorio moderno de time de vendas, totalmente desfocado.
 
-Audio: silencio total. Sem musica, sem efeito sonoro, sem fala, sem narracao,
-sem ambiencia.
+Audio: nenhum.
 
 Sem texto, sem legenda, sem logo, sem marca d'agua, sem interface na tela, sem
-tremida de camera, sem corte.
-
--------------------------------------------------------------------------------
-4) AJUSTES NO FLOW
--------------------------------------------------------------------------------
-
-Duracao   : o Flow entrega 8 s. Corte pra ~5 s, no maximo 6. O overlay do
-            dashboard so revela o card da venda quando o video termina, entao
-            video longo trava a tela durante a comemoracao.
-Formato   : 16:9, 1080p, mp4/h264. O video atual tem 4,8 MB e passa bem; acima
-            de ~8 MB a primeira badalada comeca a atrasar nas TVs.
-Referencia: referencia_estilo.jpg (nesta pasta) e um frame limpo do video de
-            hoje, sem marca d'agua. Da pra usar como imagem de referencia de
-            estilo - mas ela carrega a camisa amarela junto. Se o terno nao
-            pegar, tire a referencia e va so de texto.
+movimento de camera, sem zoom, sem corte.
 
 -------------------------------------------------------------------------------
 5) DEPOIS DE BAIXAR: TROCAR O AUDIO PELO SINO DE VERDADE
@@ -104,16 +131,20 @@ Este comando joga fora o audio que o Flow gerou e poe o sino no lugar:
     -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k -shortest \
     intro_social.mp4
 
-O -map 0:v pega so a imagem do video do Flow; o -map 1:a pega so o sino. O
-video nao e recomprimido (-c:v copy), entao nao perde qualidade e roda em
-segundos.
+O -map 0:v pega so a imagem do Flow; o -map 1:a pega so o sino. A imagem nao e
+recomprimida (-c:v copy), entao nao perde qualidade e roda em segundos.
 
-Para a badalada cair no frame em que ele puxa o badalo, atrase o som com
--itsoffset antes do segundo arquivo (exemplo com 1,5 s):
+Para a badalada cair no frame do golpe, atrase o som com -itsoffset antes do
+segundo arquivo (exemplo com 1,5 s):
 
   ffmpeg -i video_do_flow.mp4 -itsoffset 1.5 -i sino.mp3 \
     -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k \
     intro_social.mp4
+
+O sino.mp3 tem cerca de 6 badaladas em 2,95 s. Se o video tiver 2 golpes, corte
+o mp3 na 2a badalada pra nao soar mais sino do que se ve na tela:
+
+  ffmpeg -i sino.mp3 -t 1.4 -af "afade=t=out:st=1.1:d=0.3" sino_2x.mp3
 
 -------------------------------------------------------------------------------
 6) ONDE O VIDEO ENTRA EM PRODUCAO
