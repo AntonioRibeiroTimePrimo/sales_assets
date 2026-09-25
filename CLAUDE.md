@@ -10,7 +10,7 @@ não há código de aplicação.
 | `fotos/` | Retratos dos vendedores | `<PMP>.jpg` — o PMP em maiúsculas, ex: `JPS.jpg` |
 | `produtos/` | Marcas/produtos | nome do produto em minúsculas, ex: `portfel.jpg` |
 | `flags/` | Bandeiras de países | país em português, ex: `brasil.svg` |
-| `sino/` | Vídeos de celebração | — |
+| `sino/` | Vídeos de celebração, o áudio do sino (`sino.mp3` + `sino_base64.txt`) e os prompts de IA que geraram cada vídeo (`PROMPTS.md`) | — |
 | `scripts_venda/` | Imagens enviadas dentro de um script de venda (extensao `script_personalizado`, mensagem `[imagem]<url>`) | `<produto>_<assunto>.jpg`, ex: `l2x_pilares.jpg` |
 
 Fotos de vendedor são sempre `.jpg`. Se o original vier em WebP/PNG, converta
