@@ -31,3 +31,42 @@ python3 scripts/save_pasted_image.py fotos/ABC.jpg   # gravar a última
 O script converte para JPEG progressivo (qualidade 92) quando o original não é
 JPEG. Depois de gravar, abra o arquivo com a ferramenta Read para conferir
 visualmente que é a imagem certa antes de commitar.
+
+## PMP dos vendedores — vem do BigQuery
+
+O PMP **nunca** deve ser inventado nem deduzido do nome (os códigos são
+atribuídos, não derivados: Camila Silva = `CCL`, Bruna Palmieri = `BPS`). A fonte
+é a tabela de vendedores, e a chave de junção é o **e-mail**, não o nome
+(usada aqui para nomear os arquivos de `fotos/` e `competicao_ufc/`):
+
+```
+grupo-primo-prd.staging_google_sheets.stg_google_sheets__map_sellers_tvd
+  seller_name | seller_email | seller_pmp | seller_contract | is_active
+```
+
+Cuidados: um mesmo vendedor pode ter duas linhas (CLT e PJ) com o mesmo PMP e
+`is_active` diferente — considere ativo quem tem *pelo menos uma* linha ativa. E
+e-mails com sufixo `+algo` são alias da conta base (`guilherme.fracasso+gp@` é o
+mesmo GPF que `guilherme.fracasso@`).
+
+Não há `bq` CLI no ambiente. Acesso pela REST API, autenticando com o
+`GCP_CREDENTIALS_JSON` (base64 de um authorized_user com refresh_token):
+
+```python
+import os, base64, json, requests
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+
+d = json.loads(base64.b64decode(os.environ["GCP_CREDENTIALS_JSON"]))
+c = Credentials(None, refresh_token=d["refresh_token"], client_id=d["client_id"],
+                client_secret=d["client_secret"],
+                token_uri="https://oauth2.googleapis.com/token")
+c.refresh(Request())
+requests.post(
+    "https://bigquery.googleapis.com/bigquery/v2/projects/grupo-primo-prd/queries",
+    headers={"Authorization": "Bearer " + c.token},
+    json={"query": SQL, "useLegacySql": False, "timeoutMs": 120000})
+```
+
+Os datasets ficam em `grupo-primo-prd` (região `us`). Para achar tabela por nome:
+`SELECT table_schema, table_name FROM \`grupo-primo-prd.region-us.INFORMATION_SCHEMA.TABLES\``.
