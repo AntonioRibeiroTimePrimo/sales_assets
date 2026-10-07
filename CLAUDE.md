@@ -8,7 +8,7 @@ não há código de aplicação.
 | Pasta | Conteúdo | Convenção de nome |
 | --- | --- | --- |
 | `fotos/` | Retratos dos vendedores | `<PMP>.jpg` — o PMP em maiúsculas, ex: `JPS.jpg` |
-| `produtos/` | Marcas/produtos | nome do produto em minúsculas, ex: `portfel.jpg` |
+| `produtos/` | Marcas/produtos | nome do produto em minúsculas, ex: `portfel.jpg`. Logo que vai sobre fundo colorido é `.png` transparente: `confraria_logo.png`, `confraria_monograma.png` |
 | `flags/` | Bandeiras de países | país em português, ex: `brasil.svg` |
 | `sino/` | Vídeos de celebração, o áudio do sino (`sino.mp3` + `sino_base64.txt`) e os prompts de IA que geraram cada vídeo (`PROMPTS.md`) | — |
 | `scripts_venda/` | Imagens enviadas dentro de um script de venda (extensao `script_personalizado`, mensagem `[imagem]<url>`) | `<produto>_<assunto>.jpg`, ex: `l2x_pilares.jpg` |
