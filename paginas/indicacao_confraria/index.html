@@ -132,8 +132,12 @@
           <span class="ajuda">Com DDD. É por aqui que o time da Confraria faz o convite.</span>
           <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="off" maxlength="15" required
             placeholder="(11) 99999-9999" pattern="\(\d{2}\) \d{4,5}-\d{4}" data-msg="Confira o WhatsApp: DDD + número."></div>
-        <div class="campo"><label for="cidade">Cidade e estado</label>
-          <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas/SP" required data-msg="Preencha a cidade e o estado dele."></div>
+        <div class="campo"><label for="cidade">Cidade</label>
+          <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas" required data-msg="Preencha a cidade."></div>
+        <div class="campo"><label for="estado">Estado</label>
+          <select id="estado" name="estado" required data-msg="Escolha o estado.">
+            <option value="" selected disabled>Escolha o estado</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+          </select></div>
       </fieldset>
 
       <fieldset data-passo="4" hidden>
