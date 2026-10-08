@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indicação Portfel · A Confraria</title>
+<link rel="icon" type="image/png" href="../../produtos/confraria_monograma.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Text&display=swap">
+<style>
+  /* Paleta e fontes da Confraria: as mesmas de Dashboards/confraria_evento/app/Styles.html (brandbook). */
+  :root {
+    --cf-bg: #d8d2b8;        /* creme do brandbook (fundo) */
+    --cf-surface: #e7e2cf;   /* campo/cartao sobre o creme */
+    --cf-red: #8a2016;       /* vermelho da marca */
+    --cf-ink: #1f1c18;       /* texto */
+    --cf-ink-2: #5e574b;     /* texto de apoio */
+    --cf-line: rgba(31, 28, 24, 0.14);
+    --cf-field: rgba(31, 28, 24, 0.55);   /* borda de campo: ~3,3:1 contra o creme (--cf-line fica em ~1,3:1) */
+    --serif: 'DM Serif Text', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--cf-bg); color: var(--cf-ink); font: 16px/1.5 var(--sans); }
+  .pagina { max-width: 560px; margin: 0 auto; padding: 40px 16px 64px; }
+  .logo { display: block; width: min(260px, 70%); height: auto; margin: 0 auto 40px; }
+  body:not(.na-entrada) .logo { width: min(170px, 45%); margin-bottom: 28px; }   /* nos passos o logo so assina */
+  h1 { font: 400 clamp(28px, 7vw, 38px)/1.15 var(--serif); margin: 0 0 12px; }
+  .destaque { color: var(--cf-red); margin: 0 0 28px; }
+  .entrada-acao { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .entrada-acao .principal { margin-left: 0; }
+  .entrada-acao small { color: var(--cf-ink-2); font-size: 14px; }
+
+  .passos { list-style: none; display: flex; gap: 8px; padding: 0; margin: 0 0 28px;
+    font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--cf-ink-2); }
+  .passos li { flex: 1 1 0; min-width: 0; padding-top: 8px; border-top: 2px solid var(--cf-line); }
+  .passos li.feito { border-color: var(--cf-ink-2); }
+  .passos li.ativo { border-color: var(--cf-red); color: var(--cf-red); font-weight: 700; }
+
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+  legend { font: 400 24px/1.2 var(--serif); padding: 0; margin-bottom: 16px; }
+  .legenda-ajuda { color: var(--cf-ink-2); margin: -12px 0 20px; }
+  .campo { margin-bottom: 20px; }
+  .campo label { display: block; font-weight: 500; }
+  .ajuda { display: block; font-size: 14px; color: var(--cf-ink-2); }
+  input[type=text], input[type=email], input[type=tel] {
+    width: 100%; margin-top: 6px; padding: 12px 14px; font: inherit; color: var(--cf-ink);
+    background: var(--cf-surface); border: 1px solid var(--cf-field); border-radius: 4px; }
+  input:focus-visible { outline: 2px solid var(--cf-red); outline-offset: 1px; border-color: var(--cf-red); }
+
+  .turma { display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
+    background: var(--cf-surface); border: 1px solid var(--cf-field); border-radius: 4px; }
+  .turma:has(input:checked) { border-color: var(--cf-red); box-shadow: inset 0 0 0 1px var(--cf-red); }
+  .turma input { accent-color: var(--cf-red); width: 18px; height: 18px; margin: 0; flex: none; }
+  .turma .data { font: 400 24px/1 var(--serif); }
+  .turma .dia { color: var(--cf-ink-2); }
+  .turma .vagas { margin-left: auto; font-size: 14px; color: var(--cf-red); text-align: right; }
+  .turma.espera .data { font-size: 18px; line-height: 1.3; }
+  .aviso { padding: 14px 16px; border: 1px solid var(--cf-red); border-radius: 4px; color: var(--cf-red); }
+
+  .erro { min-height: 1.5em; margin: 4px 0 12px; color: var(--cf-red); font-weight: 500; }
+  .acoes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  button { min-height: 48px; padding: 0 22px; font: 700 14px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    border: 1px solid var(--cf-red); border-radius: 4px; cursor: pointer; }
+  .principal { margin-left: auto; background: var(--cf-red); color: var(--cf-bg); }
+  .secundario { background: transparent; color: var(--cf-red); }
+  button:disabled { opacity: .6; cursor: wait; }
+
+  #resultado { text-align: center; }
+  #resultado h2 { font: 400 clamp(28px, 7vw, 38px)/1.15 var(--serif); margin: 0 0 12px; }
+  #resultado p { margin: 0 auto 28px; max-width: 440px; }
+  #resultado .acoes { justify-content: center; }
+  #resultado .principal { margin-left: 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body class="na-entrada">
+<main class="pagina">
+  <img class="logo" src="../../produtos/confraria_logo.png" alt="Confraria, com Thiago Nigro e Bruno Perini">
+
+  <section id="entrada">
+    <h1>Convide um empresário para a Confraria.</h1>
+    <p class="destaque">A Confraria é um encontro restrito de empresários com Thiago Nigro e Bruno Perini. Você pode
+      levar alguém da sua rede, sem custo para ele. As vagas são limitadas: indique agora para garantir a dele.</p>
+    <div class="entrada-acao">
+      <button type="button" class="principal" id="comecar">Indicar um empresário</button>
+      <small>Leva 2 minutos.</small>
+    </div>
+  </section>
+
+  <section id="formulario" hidden>
+    <form id="form" novalidate>
+      <ol class="passos">
+        <li data-p="1">Você</li><li data-p="2">Convidado</li><li data-p="3">Data</li>
+      </ol>
+
+      <fieldset data-passo="1">
+        <legend>Seus dados</legend>
+        <div class="campo"><label for="nomeIndicador">Seu nome</label>
+          <input id="nomeIndicador" name="nomeIndicador" type="text" autocomplete="name" maxlength="200" required data-msg="Preencha seu nome."></div>
+        <div class="campo"><label for="emailIndicador">Seu e-mail</label>
+          <span class="ajuda">A confirmação da vaga chega aqui.</span>
+          <input id="emailIndicador" name="emailIndicador" type="email" autocomplete="email" maxlength="200" required data-msg="Confira seu e-mail: falta o @ ou o domínio."></div>
+      </fieldset>
+
+      <fieldset data-passo="2" hidden>
+        <legend>Quem você quer convidar?</legend>
+        <p class="legenda-ajuda">Usamos estes contatos só para fazer o convite.</p>
+        <div class="campo"><label for="nomeConvidado">Nome completo</label>
+          <input id="nomeConvidado" name="nomeConvidado" type="text" autocomplete="off" maxlength="200" required data-msg="Preencha o nome completo dele."></div>
+        <div class="campo"><label for="empresa">Empresa</label>
+          <span class="ajuda">Onde ele é sócio ou executivo.</span>
+          <input id="empresa" name="empresa" type="text" autocomplete="off" maxlength="200" required data-msg="Preencha a empresa dele."></div>
+        <div class="campo"><label for="emailConvidado">E-mail</label>
+          <input id="emailConvidado" name="emailConvidado" type="email" autocomplete="off" maxlength="200" required data-msg="Confira o e-mail dele: falta o @ ou o domínio."></div>
+        <div class="campo"><label for="whatsapp">WhatsApp</label>
+          <span class="ajuda">Com DDD. É por aqui que o time da Confraria faz o convite.</span>
+          <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="off" maxlength="20" required
+            pattern="[0-9()+. \-]{10,20}" data-msg="Confira o WhatsApp: o número precisa ter DDD."></div>
+        <div class="campo"><label for="cidade">Cidade e estado</label>
+          <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas/SP" required data-msg="Preencha a cidade e o estado dele."></div>
+      </fieldset>
+
+      <fieldset data-passo="3" hidden>
+        <legend>Qual data fica boa para ele?</legend>
+        <p class="legenda-ajuda">Estas datas ainda têm vaga. Antes de enviar, confirme com seu convidado que ele pode ir.</p>
+        <div id="turmas" role="radiogroup" aria-label="Datas"></div>
+      </fieldset>
+
+      <p class="erro" id="erro" role="alert"></p>
+      <div class="acoes">
+        <button type="button" class="secundario" id="voltar">Voltar</button>
+        <button type="submit" class="principal" id="avancar">Continuar</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="resultado" hidden aria-live="polite">
+    <h2 id="resTitulo"></h2>
+    <p id="resTexto"></p>
+    <div class="acoes">
+      <button type="button" class="secundario" id="outraData" hidden>Escolher outra data</button>
+      <button type="button" class="principal" id="outraPessoa">Indicar outra pessoa</button>
+    </div>
+  </section>
+</main>
+
+<script>
+/* Pagina estatica (GitHub Pages do sales_assets). Leitura e gravacao: Web App do Apps Script em
+   sales_analytics/ferramentas/indicacao_portfel_confraria (Code.gs). */
+var API = 'https://script.google.com/macros/s/AKfycbxYPBUUFHw_ISPP9_xBi-XbMpe3m3jsO8xMd3SIqTSmsx5far7PZuCl0i94hqmlvVaE/exec';
+var TURMAS;   // undefined = carregando; null = nao deu pra ler o Controle agora
+var SEM_VAGA = 'Todas as datas estão cheias. Quero entrar na lista de espera.';
+var form = document.getElementById('form');
+var passo = 1;
+function $(id) { return document.getElementById(id); }
+function erro(msg) { $('erro').textContent = msg || ''; }
+
+/** Uma tela por vez: entrada (o convite), formulario (os 3 passos) ou resultado. */
+function mostraTela(id) {
+  ['entrada', 'formulario', 'resultado'].forEach(function (t) { $(t).hidden = t !== id; });
+  document.body.classList.toggle('na-entrada', id === 'entrada');
+  window.scrollTo(0, 0);
+}
+
+function mostraPasso(n, foca) {
+  passo = n;
+  form.querySelectorAll('fieldset').forEach(function (f) { f.hidden = Number(f.dataset.passo) !== n; });
+  form.querySelectorAll('.passos li').forEach(function (li) {
+    li.classList.toggle('ativo', Number(li.dataset.p) === n);
+    li.classList.toggle('feito', Number(li.dataset.p) < n);
+  });
+  $('avancar').textContent = n === 3 ? 'Enviar indicação' : 'Continuar';
+  erro('');
+  var primeiro = form.querySelector('fieldset[data-passo="' + n + '"] input');
+  if (foca && primeiro) primeiro.focus();
+}
+
+/** Mensagem do primeiro campo invalido do passo, ou '' se o passo esta ok. */
+function validaPasso(n) {
+  if (n === 3 && TURMAS === undefined) return 'Ainda carregando as datas. Tente de novo em um instante.';
+  if (n === 3 && TURMAS === null) return 'Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.';
+  var campos = form.querySelectorAll('fieldset[data-passo="' + n + '"] input');
+  for (var i = 0; i < campos.length; i++) {
+    if (campos[i].type !== 'radio') campos[i].value = campos[i].value.trim();
+    if (!campos[i].checkValidity()) { campos[i].focus(); return campos[i].dataset.msg || 'Preencha este campo.'; }
+  }
+  return '';
+}
+
+function cartaoTurma(t) {
+  var l = document.createElement('label');
+  l.className = 'turma' + (t ? '' : ' espera');
+  l.innerHTML = '<input type="radio" name="turma" required data-msg="Escolha uma data.">' +
+    '<span><span class="data"></span> <span class="dia"></span></span><span class="vagas"></span>';
+  l.querySelector('input').value = t ? t.chave : '';
+  l.querySelector('.data').textContent = t ? t.chave : SEM_VAGA;
+  l.querySelector('.dia').textContent = t ? t.dia : '';
+  l.querySelector('.vagas').textContent = t ? (t.livres === 1 ? 'Última vaga' : t.livres + ' vagas') : '';
+  return l;
+}
+
+function desenhaTurmas() {
+  var box = $('turmas');
+  box.innerHTML = '';
+  if (TURMAS === undefined) { box.innerHTML = '<p class="legenda-ajuda">Carregando as datas…</p>'; return; }
+  if (TURMAS === null) {
+    box.innerHTML = '<p class="aviso">Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.</p>';
+    return;
+  }
+  (TURMAS.length ? TURMAS : [null]).forEach(function (t) { box.appendChild(cartaoTurma(t)); });
+}
+
+function dados() {
+  var d = {};
+  new FormData(form).forEach(function (v, k) { d[k] = v; });
+  return d;
+}
+
+/** POST com corpo text/plain: e "simple request", sem preflight de CORS, que o Apps Script nao responde. */
+function envia() {
+  var b = $('avancar');
+  b.disabled = true; b.textContent = 'Enviando…'; erro('');
+  function falhou() { erro('Não conseguimos enviar agora. Tente de novo em instantes.'); }
+  fetch(API, { method: 'POST', body: JSON.stringify(dados()) })
+    .then(function (resp) { return resp.json(); })
+    .then(function (r) { if (r.falha) falhou(); else recebeu(r); })
+    .catch(falhou)
+    .then(function () { b.disabled = false; b.textContent = 'Enviar indicação'; });
+}
+
+function carregaTurmas() {
+  fetch(API + '?api=turmas')
+    .then(function (resp) { return resp.json(); })
+    .then(function (r) { TURMAS = r.turmas; })
+    .catch(function () { TURMAS = null; })
+    .then(desenhaTurmas);
+}
+
+function recebeu(r) {
+  if (r.erro) { erro(r.erro); return; }
+  TURMAS = r.turmas;
+  desenhaTurmas();
+  var txt = textoResultado(r, dados());
+  $('resTitulo').textContent = txt[0];
+  $('resTexto').textContent = txt[1];
+  $('outraData').hidden = !(r.status === 'Lista de espera' && TURMAS.length);
+  mostraTela('resultado');
+}
+
+function textoResultado(r, d) {
+  var quem = d.nomeConvidado;
+  if (r.status === 'Confirmada') return ['Vaga garantida.', quem + ' está confirmado na Confraria de ' + r.turma +
+    '. A confirmação foi para ' + d.emailIndicador + ', e o time da Confraria vai falar com ele pelo WhatsApp para combinar os detalhes.'];
+  if (r.status === 'Duplicada') return [quem + ' já estava convidado.', 'Ele já tinha sido indicado para ' + r.turma +
+    ', e essa indicação continua valendo. Não precisa fazer nada.'];
+  if (r.turma) return ['Ele está na lista de espera.', 'As vagas de ' + r.turma + ' acabaram pouco antes da sua indicação chegar. ' +
+    'Se uma abrir, ' + quem + ' é o próximo. Se preferir, escolha outra data.'];
+  return ['Ele está na lista de espera.', 'Todas as datas estão cheias no momento. Quando abrir uma nova, ela aparece nesta página.'];
+}
+
+function voltaAoFormulario(passoAlvo, limpaConvidado) {
+  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="2"] input').forEach(function (i) { i.value = ''; });
+  form.querySelectorAll('input[name=turma]').forEach(function (i) { i.checked = false; });
+  mostraTela('formulario');
+  mostraPasso(passoAlvo, true);
+}
+
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+  var msg = validaPasso(passo);
+  if (msg) { erro(msg); return; }
+  if (passo < 3) mostraPasso(passo + 1, true); else envia();
+});
+$('voltar').addEventListener('click', function () {
+  if (passo === 1) mostraTela('entrada'); else mostraPasso(passo - 1, true);
+});
+$('comecar').addEventListener('click', function () { mostraTela('formulario'); mostraPasso(1, true); });
+$('outraData').addEventListener('click', function () { voltaAoFormulario(3, false); });
+$('outraPessoa').addEventListener('click', function () { voltaAoFormulario(2, true); });
+desenhaTurmas();
+carregaTurmas();
+mostraPasso(1, false);
+</script>
+</body>
+</html>
