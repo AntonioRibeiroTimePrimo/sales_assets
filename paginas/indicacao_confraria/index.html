@@ -42,7 +42,7 @@
   .campo { margin-bottom: 20px; }
   .campo label { display: block; font-weight: 500; }
   .ajuda { display: block; font-size: 14px; color: var(--cf-ink-2); }
-  input[type=text], input[type=email], input[type=tel] {
+  input[type=text], input[type=email], input[type=tel], select {
     width: 100%; margin-top: 6px; padding: 12px 14px; font: inherit; color: var(--cf-ink);
     background: var(--cf-surface); border: 1px solid var(--cf-field); border-radius: 4px; }
   input:focus-visible { outline: 2px solid var(--cf-red); outline-offset: 1px; border-color: var(--cf-red); }
@@ -110,12 +110,22 @@
         <div class="campo"><label for="empresa">Empresa</label>
           <span class="ajuda">Onde ele é sócio ou executivo.</span>
           <input id="empresa" name="empresa" type="text" autocomplete="off" maxlength="200" required data-msg="Preencha a empresa dele."></div>
+        <div class="campo"><label for="segmento">Em que a empresa atua?</label>
+          <span class="ajuda">Seja específico: em vez de "indústria", algo como "indústria de embalagens plásticas".</span>
+          <input id="segmento" name="segmento" type="text" autocomplete="off" maxlength="200" required data-msg="Conte em que a empresa atua."></div>
+        <div class="campo"><label for="faturamento">Quanto a empresa fatura por ano?</label>
+          <span class="ajuda">Uma estimativa já ajuda.</span>
+          <select id="faturamento" name="faturamento" required data-msg="Escolha a faixa de faturamento.">
+            <option value="" selected disabled>Escolha uma faixa</option>
+            <option>Até R$ 5 milhões</option><option>R$ 5 a 10 milhões</option><option>R$ 10 a 50 milhões</option>
+            <option>R$ 50 a 100 milhões</option><option>Mais de R$ 100 milhões</option><option>Não sei</option>
+          </select></div>
         <div class="campo"><label for="emailConvidado">E-mail</label>
           <input id="emailConvidado" name="emailConvidado" type="email" autocomplete="off" maxlength="200" required data-msg="Confira o e-mail dele: falta o @ ou o domínio."></div>
         <div class="campo"><label for="whatsapp">WhatsApp</label>
           <span class="ajuda">Com DDD. É por aqui que o time da Confraria faz o convite.</span>
-          <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="off" maxlength="20" required
-            pattern="[0-9()+. \-]{10,20}" data-msg="Confira o WhatsApp: o número precisa ter DDD."></div>
+          <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="off" maxlength="15" required
+            placeholder="(11) 99999-9999" pattern="\(\d{2}\) \d{4,5}-\d{4}" data-msg="Confira o WhatsApp: DDD + número."></div>
         <div class="campo"><label for="cidade">Cidade e estado</label>
           <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas/SP" required data-msg="Preencha a cidade e o estado dele."></div>
       </fieldset>
@@ -179,9 +189,9 @@ function mostraPasso(n, foca) {
 function validaPasso(n) {
   if (n === 3 && TURMAS === undefined) return 'Ainda carregando as datas. Tente de novo em um instante.';
   if (n === 3 && TURMAS === null) return 'Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.';
-  var campos = form.querySelectorAll('fieldset[data-passo="' + n + '"] input');
+  var campos = form.querySelectorAll('fieldset[data-passo="' + n + '"] input, fieldset[data-passo="' + n + '"] select');
   for (var i = 0; i < campos.length; i++) {
-    if (campos[i].type !== 'radio') campos[i].value = campos[i].value.trim();
+    if (campos[i].type !== 'radio' && campos[i].tagName === 'INPUT') campos[i].value = campos[i].value.trim();
     if (!campos[i].checkValidity()) { campos[i].focus(); return campos[i].dataset.msg || 'Preencha este campo.'; }
   }
   return '';
@@ -259,11 +269,23 @@ function textoResultado(r, d) {
 }
 
 function voltaAoFormulario(passoAlvo, limpaConvidado) {
-  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="2"] input').forEach(function (i) { i.value = ''; });
+  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="2"] input, fieldset[data-passo="2"] select').forEach(function (i) { i.value = ''; });
   form.querySelectorAll('input[name=turma]').forEach(function (i) { i.checked = false; });
   mostraTela('formulario');
   mostraPasso(passoAlvo, true);
 }
+
+/** Mascara do WhatsApp enquanto digita: 11999998888 -> (11) 99999-8888. O servidor formata de novo. */
+function mascaraFone(v) {
+  var d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d ? '(' + d : '';
+  if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+  var meio = d.length === 11 ? 7 : 6;
+  return '(' + d.slice(0, 2) + ') ' + d.slice(2, meio) + '-' + d.slice(meio);
+}
+$('whatsapp').addEventListener('input', function (e) { e.target.value = mascaraFone(e.target.value); });
+form.addEventListener('input', function () { erro(''); });   // aviso some quando a pessoa corrige
+form.addEventListener('change', function () { erro(''); });
 
 form.addEventListener('submit', function (e) {
   e.preventDefault();
