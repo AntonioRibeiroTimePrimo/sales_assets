@@ -226,21 +226,30 @@ function dados() {
   return d;
 }
 
+/**
+ * fetch com ate 3 tentativas. O Apps Script executa sempre, mas o Google as vezes falha (~1 em 8) ao
+ * entregar a resposta. Reenviar a indicacao e seguro: o servidor reconhece o mesmo envio e devolve o resultado.
+ */
+function buscaJson(url, opcoes, tentativas) {
+  return fetch(url, opcoes).then(function (resp) { return resp.json(); }).catch(function (e) {
+    if (tentativas <= 1) throw e;
+    return new Promise(function (ok) { setTimeout(ok, 800); }).then(function () { return buscaJson(url, opcoes, tentativas - 1); });
+  });
+}
+
 /** POST com corpo text/plain: e "simple request", sem preflight de CORS, que o Apps Script nao responde. */
 function envia() {
   var b = $('avancar');
   b.disabled = true; b.textContent = 'Enviando…'; erro('');
   function falhou() { erro('Não conseguimos enviar agora. Tente de novo em instantes.'); }
-  fetch(API, { method: 'POST', body: JSON.stringify(dados()) })
-    .then(function (resp) { return resp.json(); })
+  buscaJson(API, { method: 'POST', body: JSON.stringify(dados()) }, 3)
     .then(function (r) { if (r.falha) falhou(); else recebeu(r); })
     .catch(falhou)
     .then(function () { b.disabled = false; b.textContent = 'Enviar indicação'; });
 }
 
 function carregaTurmas() {
-  fetch(API + '?api=turmas')
-    .then(function (resp) { return resp.json(); })
+  buscaJson(API + '?api=turmas', undefined, 3)
     .then(function (r) { TURMAS = r.turmas; })
     .catch(function () { TURMAS = null; })
     .then(desenhaTurmas);
