@@ -280,7 +280,7 @@ function recebeu(r) {
 function textoResultado(r, d) {
   var quem = d.nomeConvidado;
   if (r.status === 'Confirmada') return ['Aplicação realizada.', 'Recebemos a indicação de ' + quem + ' para a Confraria de ' +
-    r.turma + '. Em breve, a equipe da Confraria vai agendar uma reunião com ele para conhecer o negócio e avaliar se o encontro faz sentido para o momento dele.'];
+    r.turma + '. Em breve, a equipe da Confraria vai entrar em contato com ele pelo número (11) 97696-7983 para agendar uma reunião, conhecer o negócio e avaliar se o encontro faz sentido para o momento dele.'];
   if (r.turma) return ['Ele está na lista de espera.', 'As vagas de ' + r.turma + ' acabaram pouco antes da sua indicação chegar. ' +
     'Se uma abrir, ' + quem + ' é o próximo. Se preferir, escolha outra data.'];
   return ['Ele está na lista de espera.', 'Todas as datas estão cheias no momento. Quando abrir uma nova, ela aparece nesta página.'];
