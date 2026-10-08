@@ -90,19 +90,28 @@
   <section id="formulario" hidden>
     <form id="form" novalidate>
       <ol class="passos">
-        <li data-p="1">Você</li><li data-p="2">Convidado</li><li data-p="3">Data</li>
+        <li data-p="1">Cliente</li><li data-p="2">Você</li><li data-p="3">Convidado</li><li data-p="4">Data</li>
       </ol>
 
       <fieldset data-passo="1">
-        <legend>Seus dados</legend>
-        <div class="campo"><label for="nomeIndicador">Seu nome</label>
-          <input id="nomeIndicador" name="nomeIndicador" type="text" autocomplete="name" maxlength="200" required data-msg="Preencha seu nome."></div>
-        <div class="campo"><label for="emailIndicador">Seu e-mail</label>
-          <span class="ajuda">A confirmação da vaga chega aqui.</span>
-          <input id="emailIndicador" name="emailIndicador" type="email" autocomplete="email" maxlength="200" required data-msg="Confira seu e-mail: falta o @ ou o domínio."></div>
+        <legend>Você é cliente de onde?</legend>
+        <p class="legenda-ajuda">A indicação é um benefício para clientes Portfel e Equity+.</p>
+        <div role="radiogroup" aria-label="Cliente de">
+          <label class="turma"><input type="radio" name="origem" value="Portfel" required data-msg="Escolha se você é cliente Portfel ou Equity+."><span class="data">Portfel</span></label>
+          <label class="turma"><input type="radio" name="origem" value="Equity+" required data-msg="Escolha se você é cliente Portfel ou Equity+."><span class="data">Equity+</span></label>
+        </div>
       </fieldset>
 
       <fieldset data-passo="2" hidden>
+        <legend>Agora, os seus dados</legend>
+        <p class="legenda-ajuda">Você é quem está indicando. É para o seu e-mail que mandamos a confirmação da vaga do convidado.</p>
+        <div class="campo"><label for="nomeIndicador">Seu nome</label>
+          <input id="nomeIndicador" name="nomeIndicador" type="text" autocomplete="name" maxlength="200" required data-msg="Preencha seu nome."></div>
+        <div class="campo"><label for="emailIndicador">Seu e-mail</label>
+          <input id="emailIndicador" name="emailIndicador" type="email" autocomplete="email" maxlength="200" required data-msg="Confira seu e-mail: falta o @ ou o domínio."></div>
+      </fieldset>
+
+      <fieldset data-passo="3" hidden>
         <legend>Quem você quer convidar?</legend>
         <p class="legenda-ajuda">Usamos estes contatos só para fazer o convite.</p>
         <div class="campo"><label for="nomeConvidado">Nome completo</label>
@@ -130,7 +139,7 @@
           <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas/SP" required data-msg="Preencha a cidade e o estado dele."></div>
       </fieldset>
 
-      <fieldset data-passo="3" hidden>
+      <fieldset data-passo="4" hidden>
         <legend>Qual data fica boa para ele?</legend>
         <p class="legenda-ajuda">Estas datas ainda têm vaga. Antes de enviar, confirme com seu convidado que ele pode ir.</p>
         <div id="turmas" role="radiogroup" aria-label="Datas"></div>
@@ -158,6 +167,7 @@
 /* Pagina estatica (GitHub Pages do sales_assets). Leitura e gravacao: Web App do Apps Script em
    sales_analytics/ferramentas/indicacao_portfel_confraria (Code.gs). */
 var API = 'https://script.google.com/macros/s/AKfycbxYPBUUFHw_ISPP9_xBi-XbMpe3m3jsO8xMd3SIqTSmsx5far7PZuCl0i94hqmlvVaE/exec';
+var ULTIMO = 4;   // passos: 1 cliente, 2 voce, 3 convidado, 4 data
 var TURMAS;   // undefined = carregando; null = nao deu pra ler o Controle agora
 var SEM_VAGA = 'Todas as datas estão cheias. Quero entrar na lista de espera.';
 var form = document.getElementById('form');
@@ -179,7 +189,7 @@ function mostraPasso(n, foca) {
     li.classList.toggle('ativo', Number(li.dataset.p) === n);
     li.classList.toggle('feito', Number(li.dataset.p) < n);
   });
-  $('avancar').textContent = n === 3 ? 'Enviar indicação' : 'Continuar';
+  $('avancar').textContent = n === ULTIMO ? 'Enviar indicação' : 'Continuar';
   erro('');
   var primeiro = form.querySelector('fieldset[data-passo="' + n + '"] input');
   if (foca && primeiro) primeiro.focus();
@@ -187,8 +197,8 @@ function mostraPasso(n, foca) {
 
 /** Mensagem do primeiro campo invalido do passo, ou '' se o passo esta ok. */
 function validaPasso(n) {
-  if (n === 3 && TURMAS === undefined) return 'Ainda carregando as datas. Tente de novo em um instante.';
-  if (n === 3 && TURMAS === null) return 'Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.';
+  if (n === ULTIMO && TURMAS === undefined) return 'Ainda carregando as datas. Tente de novo em um instante.';
+  if (n === ULTIMO && TURMAS === null) return 'Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.';
   var campos = form.querySelectorAll('fieldset[data-passo="' + n + '"] input, fieldset[data-passo="' + n + '"] select');
   for (var i = 0; i < campos.length; i++) {
     if (campos[i].type !== 'radio' && campos[i].tagName === 'INPUT') campos[i].value = campos[i].value.trim();
@@ -270,15 +280,13 @@ function textoResultado(r, d) {
   var quem = d.nomeConvidado;
   if (r.status === 'Confirmada') return ['Vaga garantida.', quem + ' está confirmado na Confraria de ' + r.turma +
     '. A confirmação foi para ' + d.emailIndicador + ', e o time da Confraria vai falar com ele pelo WhatsApp para combinar os detalhes.'];
-  if (r.status === 'Duplicada') return [quem + ' já estava convidado.', 'Ele já tinha sido indicado para ' + r.turma +
-    ', e essa indicação continua valendo. Não precisa fazer nada.'];
   if (r.turma) return ['Ele está na lista de espera.', 'As vagas de ' + r.turma + ' acabaram pouco antes da sua indicação chegar. ' +
     'Se uma abrir, ' + quem + ' é o próximo. Se preferir, escolha outra data.'];
   return ['Ele está na lista de espera.', 'Todas as datas estão cheias no momento. Quando abrir uma nova, ela aparece nesta página.'];
 }
 
 function voltaAoFormulario(passoAlvo, limpaConvidado) {
-  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="2"] input, fieldset[data-passo="2"] select').forEach(function (i) { i.value = ''; });
+  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="3"] input, fieldset[data-passo="3"] select').forEach(function (i) { i.value = ''; });
   form.querySelectorAll('input[name=turma]').forEach(function (i) { i.checked = false; });
   mostraTela('formulario');
   mostraPasso(passoAlvo, true);
@@ -300,14 +308,14 @@ form.addEventListener('submit', function (e) {
   e.preventDefault();
   var msg = validaPasso(passo);
   if (msg) { erro(msg); return; }
-  if (passo < 3) mostraPasso(passo + 1, true); else envia();
+  if (passo < ULTIMO) mostraPasso(passo + 1, true); else envia();
 });
 $('voltar').addEventListener('click', function () {
   if (passo === 1) mostraTela('entrada'); else mostraPasso(passo - 1, true);
 });
 $('comecar').addEventListener('click', function () { mostraTela('formulario'); mostraPasso(1, true); });
-$('outraData').addEventListener('click', function () { voltaAoFormulario(3, false); });
-$('outraPessoa').addEventListener('click', function () { voltaAoFormulario(2, true); });
+$('outraData').addEventListener('click', function () { voltaAoFormulario(ULTIMO, false); });
+$('outraPessoa').addEventListener('click', function () { voltaAoFormulario(3, true); });   // passo do convidado
 desenhaTurmas();
 carregaTurmas();
 mostraPasso(1, false);
