@@ -12,7 +12,7 @@ não há código de aplicação.
 | `flags/` | Bandeiras de países | país em português, ex: `brasil.svg` |
 | `sino/` | Vídeos de celebração, o áudio do sino (`sino.mp3` + `sino_base64.txt`) e os prompts de IA que geraram cada vídeo (`PROMPTS.md`) | — |
 | `scripts_venda/` | Imagens enviadas dentro de um script de venda (extensao `script_personalizado`, mensagem `[imagem]<url>`) | `<produto>_<assunto>.jpg`, ex: `l2x_pilares.jpg` |
-| `paginas/` | Páginas estáticas publicadas pelo GitHub Pages (`antonioribeirotimeprimo.github.io/sales_assets/paginas/...`). Só a tela: a lógica fica no `sales_analytics` (ex.: `indicacao_confraria/` chama o Apps Script de `ferramentas/indicacao_portfel_confraria`). Sem dado pessoal aqui | `paginas/<nome>/index.html` |
+| `paginas/` | Fonte de páginas estáticas publicadas fora daqui (a de indicação vai pro Cloudflare: `confraria-indicacao.antonio-ribeiro.workers.dev`; o comando de publicar está no README da ferramenta no `sales_analytics`). Só a tela: a lógica fica no `sales_analytics` (ex.: `indicacao_confraria/` chama o Apps Script de `ferramentas/indicacao_portfel_confraria`). Sem dado pessoal aqui | `paginas/<nome>/index.html` |
 
 Fotos de vendedor são sempre `.jpg`. Se o original vier em WebP/PNG, converta
 antes de commitar (o script abaixo faz isso).
