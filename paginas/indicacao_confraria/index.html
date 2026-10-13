@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Indicação Portfel · A Confraria</title>
+<title>Indicação de clientes · A Confraria</title>
 <link rel="icon" type="image/png" href="../../produtos/confraria_monograma.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Text&display=swap">
 <style>
@@ -42,7 +42,7 @@
   .campo { margin-bottom: 20px; }
   .campo label { display: block; font-weight: 500; }
   .ajuda { display: block; font-size: 14px; color: var(--cf-ink-2); }
-  input[type=text], input[type=email], input[type=tel] {
+  input[type=text], input[type=email], input[type=tel], select {
     width: 100%; margin-top: 6px; padding: 12px 14px; font: inherit; color: var(--cf-ink);
     background: var(--cf-surface); border: 1px solid var(--cf-field); border-radius: 4px; }
   input:focus-visible { outline: 2px solid var(--cf-red); outline-offset: 1px; border-color: var(--cf-red); }
@@ -90,37 +90,57 @@
   <section id="formulario" hidden>
     <form id="form" novalidate>
       <ol class="passos">
-        <li data-p="1">Você</li><li data-p="2">Convidado</li><li data-p="3">Data</li>
+        <li data-p="1">Cliente</li><li data-p="2">Quem indica</li><li data-p="3">Convidado</li><li data-p="4">Data</li>
       </ol>
 
       <fieldset data-passo="1">
-        <legend>Seus dados</legend>
-        <div class="campo"><label for="nomeIndicador">Seu nome</label>
-          <input id="nomeIndicador" name="nomeIndicador" type="text" autocomplete="name" maxlength="200" required data-msg="Preencha seu nome."></div>
-        <div class="campo"><label for="emailIndicador">Seu e-mail</label>
-          <span class="ajuda">A confirmação da vaga chega aqui.</span>
-          <input id="emailIndicador" name="emailIndicador" type="email" autocomplete="email" maxlength="200" required data-msg="Confira seu e-mail: falta o @ ou o domínio."></div>
+        <legend>Seu convidado é cliente de onde?</legend>
+        <p class="legenda-ajuda">A vaga de cortesia é para clientes Portfel e Equity+.</p>
+        <div role="radiogroup" aria-label="Convidado é cliente de">
+          <label class="turma"><input type="radio" name="origem" value="Portfel" required data-msg="Escolha se o convidado é cliente Portfel ou Equity+."><span class="data">Portfel</span></label>
+          <label class="turma"><input type="radio" name="origem" value="Equity+" required data-msg="Escolha se o convidado é cliente Portfel ou Equity+."><span class="data">Equity+</span></label>
+        </div>
       </fieldset>
 
       <fieldset data-passo="2" hidden>
+        <legend>Dados de quem está indicando</legend>
+        <p class="legenda-ajuda">Preencha com os <strong>seus</strong> dados, não com os do convidado.</p>
+        <div class="campo"><label for="nomeIndicador">Seu nome</label>
+          <input id="nomeIndicador" name="nomeIndicador" type="text" autocomplete="name" maxlength="200" required data-msg="Preencha seu nome."></div>
+        <div class="campo"><label for="emailIndicador">Seu e-mail</label>
+          <input id="emailIndicador" name="emailIndicador" type="email" autocomplete="email" maxlength="200" required data-msg="Confira seu e-mail: falta o @ ou o domínio."></div>
+      </fieldset>
+
+      <fieldset data-passo="3" hidden>
         <legend>Quem você quer convidar?</legend>
         <p class="legenda-ajuda">Usamos estes contatos só para fazer o convite.</p>
         <div class="campo"><label for="nomeConvidado">Nome completo</label>
           <input id="nomeConvidado" name="nomeConvidado" type="text" autocomplete="off" maxlength="200" required data-msg="Preencha o nome completo dele."></div>
-        <div class="campo"><label for="empresa">Empresa</label>
+        <div class="campo"><label for="empresa">Qual o nome da empresa?</label>
           <span class="ajuda">Onde ele é sócio ou executivo.</span>
           <input id="empresa" name="empresa" type="text" autocomplete="off" maxlength="200" required data-msg="Preencha a empresa dele."></div>
-        <div class="campo"><label for="emailConvidado">E-mail</label>
+        <div class="campo"><label for="segmento">Qual o segmento da empresa dele?</label>
+          <span class="ajuda">Seja específico: em vez de "indústria", algo como "indústria de embalagens plásticas".</span>
+          <input id="segmento" name="segmento" type="text" autocomplete="off" maxlength="200" required data-msg="Conte em que a empresa atua."></div>
+        <div class="campo"><label for="faturamento">Quanto a empresa fatura por ano?</label>
+          <span class="ajuda">Uma estimativa já ajuda.</span>
+          <input id="faturamento" name="faturamento" type="text" autocomplete="off" maxlength="200" required
+            placeholder="Ex.: R$ 20 milhões" data-msg="Conte quanto a empresa fatura por ano."></div>
+        <div class="campo"><label for="emailConvidado">E-mail do participante</label>
           <input id="emailConvidado" name="emailConvidado" type="email" autocomplete="off" maxlength="200" required data-msg="Confira o e-mail dele: falta o @ ou o domínio."></div>
-        <div class="campo"><label for="whatsapp">WhatsApp</label>
+        <div class="campo"><label for="whatsapp">WhatsApp do participante</label>
           <span class="ajuda">Com DDD. É por aqui que o time da Confraria faz o convite.</span>
-          <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="off" maxlength="20" required
-            pattern="[0-9()+. \-]{10,20}" data-msg="Confira o WhatsApp: o número precisa ter DDD."></div>
-        <div class="campo"><label for="cidade">Cidade e estado</label>
-          <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas/SP" required data-msg="Preencha a cidade e o estado dele."></div>
+          <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" autocomplete="off" maxlength="15" required
+            placeholder="(11) 99999-9999" pattern="\(\d{2}\) \d{4,5}-\d{4}" data-msg="Confira o WhatsApp: DDD + número."></div>
+        <div class="campo"><label for="cidade">Cidade</label>
+          <input id="cidade" name="cidade" type="text" autocomplete="off" maxlength="200" placeholder="Ex.: Campinas" required data-msg="Preencha a cidade."></div>
+        <div class="campo"><label for="estado">Estado</label>
+          <select id="estado" name="estado" required data-msg="Escolha o estado.">
+            <option value="" selected disabled>Escolha o estado</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+          </select></div>
       </fieldset>
 
-      <fieldset data-passo="3" hidden>
+      <fieldset data-passo="4" hidden>
         <legend>Qual data fica boa para ele?</legend>
         <p class="legenda-ajuda">Estas datas ainda têm vaga. Antes de enviar, confirme com seu convidado que ele pode ir.</p>
         <div id="turmas" role="radiogroup" aria-label="Datas"></div>
@@ -148,6 +168,7 @@
 /* Pagina estatica (GitHub Pages do sales_assets). Leitura e gravacao: Web App do Apps Script em
    sales_analytics/ferramentas/indicacao_portfel_confraria (Code.gs). */
 var API = 'https://script.google.com/macros/s/AKfycbxYPBUUFHw_ISPP9_xBi-XbMpe3m3jsO8xMd3SIqTSmsx5far7PZuCl0i94hqmlvVaE/exec';
+var ULTIMO = 4;   // passos: 1 cliente, 2 voce, 3 convidado, 4 data
 var TURMAS;   // undefined = carregando; null = nao deu pra ler o Controle agora
 var SEM_VAGA = 'Todas as datas estão cheias. Quero entrar na lista de espera.';
 var form = document.getElementById('form');
@@ -169,7 +190,7 @@ function mostraPasso(n, foca) {
     li.classList.toggle('ativo', Number(li.dataset.p) === n);
     li.classList.toggle('feito', Number(li.dataset.p) < n);
   });
-  $('avancar').textContent = n === 3 ? 'Enviar indicação' : 'Continuar';
+  $('avancar').textContent = n === ULTIMO ? 'Enviar indicação' : 'Continuar';
   erro('');
   var primeiro = form.querySelector('fieldset[data-passo="' + n + '"] input');
   if (foca && primeiro) primeiro.focus();
@@ -177,11 +198,11 @@ function mostraPasso(n, foca) {
 
 /** Mensagem do primeiro campo invalido do passo, ou '' se o passo esta ok. */
 function validaPasso(n) {
-  if (n === 3 && TURMAS === undefined) return 'Ainda carregando as datas. Tente de novo em um instante.';
-  if (n === 3 && TURMAS === null) return 'Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.';
-  var campos = form.querySelectorAll('fieldset[data-passo="' + n + '"] input');
+  if (n === ULTIMO && TURMAS === undefined) return 'Ainda carregando as datas. Tente de novo em um instante.';
+  if (n === ULTIMO && TURMAS === null) return 'Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.';
+  var campos = form.querySelectorAll('fieldset[data-passo="' + n + '"] input, fieldset[data-passo="' + n + '"] select');
   for (var i = 0; i < campos.length; i++) {
-    if (campos[i].type !== 'radio') campos[i].value = campos[i].value.trim();
+    if (campos[i].type !== 'radio' && campos[i].tagName === 'INPUT') campos[i].value = campos[i].value.trim();
     if (!campos[i].checkValidity()) { campos[i].focus(); return campos[i].dataset.msg || 'Preencha este campo.'; }
   }
   return '';
@@ -216,21 +237,30 @@ function dados() {
   return d;
 }
 
+/**
+ * fetch com ate 3 tentativas. O Apps Script executa sempre, mas o Google as vezes falha (~1 em 8) ao
+ * entregar a resposta. Reenviar a indicacao e seguro: o servidor reconhece o mesmo envio e devolve o resultado.
+ */
+function buscaJson(url, opcoes, tentativas) {
+  return fetch(url, opcoes).then(function (resp) { return resp.json(); }).catch(function (e) {
+    if (tentativas <= 1) throw e;
+    return new Promise(function (ok) { setTimeout(ok, 800); }).then(function () { return buscaJson(url, opcoes, tentativas - 1); });
+  });
+}
+
 /** POST com corpo text/plain: e "simple request", sem preflight de CORS, que o Apps Script nao responde. */
 function envia() {
   var b = $('avancar');
   b.disabled = true; b.textContent = 'Enviando…'; erro('');
   function falhou() { erro('Não conseguimos enviar agora. Tente de novo em instantes.'); }
-  fetch(API, { method: 'POST', body: JSON.stringify(dados()) })
-    .then(function (resp) { return resp.json(); })
+  buscaJson(API, { method: 'POST', body: JSON.stringify(dados()) }, 3)
     .then(function (r) { if (r.falha) falhou(); else recebeu(r); })
     .catch(falhou)
     .then(function () { b.disabled = false; b.textContent = 'Enviar indicação'; });
 }
 
 function carregaTurmas() {
-  fetch(API + '?api=turmas')
-    .then(function (resp) { return resp.json(); })
+  buscaJson(API + '?api=turmas', undefined, 3)
     .then(function (r) { TURMAS = r.turmas; })
     .catch(function () { TURMAS = null; })
     .then(desenhaTurmas);
@@ -249,34 +279,44 @@ function recebeu(r) {
 
 function textoResultado(r, d) {
   var quem = d.nomeConvidado;
-  if (r.status === 'Confirmada') return ['Vaga garantida.', quem + ' está confirmado na Confraria de ' + r.turma +
-    '. A confirmação foi para ' + d.emailIndicador + ', e o time da Confraria vai falar com ele pelo WhatsApp para combinar os detalhes.'];
-  if (r.status === 'Duplicada') return [quem + ' já estava convidado.', 'Ele já tinha sido indicado para ' + r.turma +
-    ', e essa indicação continua valendo. Não precisa fazer nada.'];
+  if (r.status === 'Confirmada') return ['Aplicação realizada.', 'Recebemos a indicação de ' + quem + ' para a Confraria de ' +
+    r.turma + '. Em breve, a equipe da Confraria vai entrar em contato com ele pelo número (11) 97696-7983 para agendar uma reunião, conhecer o negócio e avaliar se o encontro faz sentido para o momento dele.'];
   if (r.turma) return ['Ele está na lista de espera.', 'As vagas de ' + r.turma + ' acabaram pouco antes da sua indicação chegar. ' +
     'Se uma abrir, ' + quem + ' é o próximo. Se preferir, escolha outra data.'];
   return ['Ele está na lista de espera.', 'Todas as datas estão cheias no momento. Quando abrir uma nova, ela aparece nesta página.'];
 }
 
 function voltaAoFormulario(passoAlvo, limpaConvidado) {
-  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="2"] input').forEach(function (i) { i.value = ''; });
+  if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="3"] input, fieldset[data-passo="3"] select').forEach(function (i) { i.value = ''; });
   form.querySelectorAll('input[name=turma]').forEach(function (i) { i.checked = false; });
   mostraTela('formulario');
   mostraPasso(passoAlvo, true);
 }
 
+/** Mascara do WhatsApp enquanto digita: 11999998888 -> (11) 99999-8888. O servidor formata de novo. */
+function mascaraFone(v) {
+  var d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d ? '(' + d : '';
+  if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+  var meio = d.length === 11 ? 7 : 6;
+  return '(' + d.slice(0, 2) + ') ' + d.slice(2, meio) + '-' + d.slice(meio);
+}
+$('whatsapp').addEventListener('input', function (e) { e.target.value = mascaraFone(e.target.value); });
+form.addEventListener('input', function () { erro(''); });   // aviso some quando a pessoa corrige
+form.addEventListener('change', function () { erro(''); });
+
 form.addEventListener('submit', function (e) {
   e.preventDefault();
   var msg = validaPasso(passo);
   if (msg) { erro(msg); return; }
-  if (passo < 3) mostraPasso(passo + 1, true); else envia();
+  if (passo < ULTIMO) mostraPasso(passo + 1, true); else envia();
 });
 $('voltar').addEventListener('click', function () {
   if (passo === 1) mostraTela('entrada'); else mostraPasso(passo - 1, true);
 });
 $('comecar').addEventListener('click', function () { mostraTela('formulario'); mostraPasso(1, true); });
-$('outraData').addEventListener('click', function () { voltaAoFormulario(3, false); });
-$('outraPessoa').addEventListener('click', function () { voltaAoFormulario(2, true); });
+$('outraData').addEventListener('click', function () { voltaAoFormulario(ULTIMO, false); });
+$('outraPessoa').addEventListener('click', function () { voltaAoFormulario(3, true); });   // passo do convidado
 desenhaTurmas();
 carregaTurmas();
 mostraPasso(1, false);
