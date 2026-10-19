@@ -100,6 +100,11 @@
           <label class="turma"><input type="radio" name="origem" value="Portfel" required data-msg="Escolha se o convidado é cliente Portfel ou Equity+."><span class="data">Portfel</span></label>
           <label class="turma"><input type="radio" name="origem" value="Equity+" required data-msg="Escolha se o convidado é cliente Portfel ou Equity+."><span class="data">Equity+</span></label>
         </div>
+        <div class="campo" id="campoPatrimonio" hidden><label for="patrimonio">Qual o patrimônio líquido do convidado?</label>
+          <span class="ajuda">Uma estimativa já ajuda.</span>
+          <select id="patrimonio" name="patrimonio" required disabled data-msg="Escolha o patrimônio líquido do convidado.">
+            <option value="" selected disabled>Escolha uma faixa</option><option>Menos de R$ 10 milhões</option><option>De R$ 10 a 30 milhões</option><option>De R$ 30 a 100 milhões</option><option>Acima de R$ 100 milhões</option>
+          </select></div>
       </fieldset>
 
       <fieldset data-passo="2" hidden>
@@ -170,6 +175,7 @@
 var API = 'https://script.google.com/macros/s/AKfycbxYPBUUFHw_ISPP9_xBi-XbMpe3m3jsO8xMd3SIqTSmsx5far7PZuCl0i94hqmlvVaE/exec';
 var ULTIMO = 4;   // passos: 1 cliente, 2 voce, 3 convidado, 4 data
 var TURMAS;   // undefined = carregando; null = nao deu pra ler o Controle agora
+var PATRIMONIO_RECUSADO = 'Menos de R$ 10 milhões';   // Portfel abaixo disso nao segue (o servidor confere de novo)
 var SEM_VAGA = 'Todas as datas estão cheias. Quero entrar na lista de espera.';
 var form = document.getElementById('form');
 var passo = 1;
@@ -267,6 +273,7 @@ function carregaTurmas() {
 }
 
 function recebeu(r) {
+  if (r.recusada) { mostraRecusa(); return; }
   if (r.erro) { erro(r.erro); return; }
   TURMAS = r.turmas;
   desenhaTurmas();
@@ -286,8 +293,25 @@ function textoResultado(r, d) {
   return ['Ele está na lista de espera.', 'Todas as datas estão cheias no momento. Quando abrir uma nova, ela aparece nesta página.'];
 }
 
+/** Portfel com patrimonio abaixo de R$ 10 mi: nada e enviado nem gravado. */
+function mostraRecusa() {
+  $('resTitulo').textContent = 'Não podemos seguir com esta indicação.';
+  $('resTexto').textContent = 'A vaga de cortesia da Confraria para clientes Portfel é para empresários com patrimônio líquido ' +
+    'a partir de R$ 10 milhões. Obrigado por lembrar da Confraria.';
+  $('outraData').hidden = true;
+  mostraTela('resultado');
+}
+
+/** Pergunta do patrimonio so aparece (e so vale) quando o convidado e Portfel. */
+function atualizaPatrimonio() {
+  var portfel = !!form.querySelector('input[name=origem][value="Portfel"]:checked');
+  $('campoPatrimonio').hidden = !portfel;
+  $('patrimonio').disabled = !portfel;   // desabilitado: nao valida nem vai no envio
+}
+
 function voltaAoFormulario(passoAlvo, limpaConvidado) {
   if (limpaConvidado) form.querySelectorAll('fieldset[data-passo="3"] input, fieldset[data-passo="3"] select').forEach(function (i) { i.value = ''; });
+  if (passoAlvo === 1) { form.querySelectorAll('input[name=origem]').forEach(function (i) { i.checked = false; }); $('patrimonio').value = ''; atualizaPatrimonio(); }
   form.querySelectorAll('input[name=turma]').forEach(function (i) { i.checked = false; });
   mostraTela('formulario');
   mostraPasso(passoAlvo, true);
@@ -303,12 +327,13 @@ function mascaraFone(v) {
 }
 $('whatsapp').addEventListener('input', function (e) { e.target.value = mascaraFone(e.target.value); });
 form.addEventListener('input', function () { erro(''); });   // aviso some quando a pessoa corrige
-form.addEventListener('change', function () { erro(''); });
+form.addEventListener('change', function () { erro(''); atualizaPatrimonio(); });
 
 form.addEventListener('submit', function (e) {
   e.preventDefault();
   var msg = validaPasso(passo);
   if (msg) { erro(msg); return; }
+  if (passo === 1 && !$('patrimonio').disabled && $('patrimonio').value === PATRIMONIO_RECUSADO) { mostraRecusa(); return; }
   if (passo < ULTIMO) mostraPasso(passo + 1, true); else envia();
 });
 $('voltar').addEventListener('click', function () {
@@ -316,7 +341,9 @@ $('voltar').addEventListener('click', function () {
 });
 $('comecar').addEventListener('click', function () { mostraTela('formulario'); mostraPasso(1, true); });
 $('outraData').addEventListener('click', function () { voltaAoFormulario(ULTIMO, false); });
-$('outraPessoa').addEventListener('click', function () { voltaAoFormulario(3, true); });   // passo do convidado
+$('outraPessoa').addEventListener('click', function () {   // passo do convidado; depois de uma recusa, recomeca do cliente
+  voltaAoFormulario($('patrimonio').value === PATRIMONIO_RECUSADO ? 1 : 3, true);
+});
 desenhaTurmas();
 carregaTurmas();
 mostraPasso(1, false);
