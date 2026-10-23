@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard TV</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: black; }
+  iframe { display: block; width: 100%; height: 100%; border: 0; }
+</style>
+</head>
+<body>
+<iframe id="dash" title="Dashboard Gerencial" allow="autoplay; fullscreen" allowfullscreen></iframe>
+<script>
+  // Moldura das TVs da sala (23/10/2026). So a tela: a logica mora no sales_analytics
+  // (Dashboards/gerencial: naMoldura_/avisarMoldura_/recarregarTela no JavaScript.html).
+  //
+  // Por que existe: nas TVs Samsung o canal do Apps Script morre e so volta com F5, e de dentro
+  // do Apps Script o navegador nao deixa recarregar a pagina sem clique. Aqui a moldura e a
+  // pagina de cima: recarrega o dash quando ele pede ('recarregar') ou quando ele para de dar
+  // sinal de vida ('vivo', a cada minuto). Nao tem dado nenhum: quem decide o acesso continua
+  // sendo o Apps Script (login Google + aba Acessos).
+  //
+  // Parametros desta URL vao junto pro dash: ?view=portfel-tv abre direto na Visao TV.
+  var EXEC = 'https://script.google.com/macros/s/AKfycbw2FT2PKqhY3x-ZBAYNEwnk7tUeU7fXR90QQF3EyAoI87y2kjJhMxJtB4rDz7S_lLo/exec';
+  var SEM_SINAL_MS = 10 * 60000;      // dash sem 'vivo' por 10 min = JS morto ou tela de erro
+  var ENTRE_RECARGAS_MS = 2 * 60000;  // pedido automatico logo depois de recarregar e ignorado
+  var ORIGEM_DASH = /^https:\/\/[a-z0-9-]+\.googleusercontent\.com$/;
+  var dash = document.getElementById('dash');
+  var ultimoSinal = 0, ultimaRecarga = 0;
+
+  function urlDash() {
+    var q = location.search.replace(/^\?/, '');
+    return EXEC + '?' + (q ? q + '&' : '') + 'moldura=1';
+  }
+  function recarregar(forcar) {
+    var agora = Date.now();
+    if (!forcar && agora - ultimaRecarga < ENTRE_RECARGAS_MS) return;
+    ultimaRecarga = ultimoSinal = agora;
+    dash.src = urlDash();
+  }
+  window.addEventListener('message', function (ev) {
+    if (!ORIGEM_DASH.test(ev.origin) || !ev.data) return;
+    if (ev.data.gerencial === 'vivo') ultimoSinal = Date.now();
+    else if (ev.data.gerencial === 'recarregar') recarregar(ev.data.info === 'recarga-botao');
+  });
+  setInterval(function () {
+    if (Date.now() - ultimoSinal > SEM_SINAL_MS) recarregar(false);
+  }, 60000);
+  recarregar(true);
+</script>
+</body>
+</html>
