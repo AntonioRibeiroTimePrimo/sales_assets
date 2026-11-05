@@ -220,7 +220,7 @@ function cartaoTurma(t) {
   l.innerHTML = '<input type="radio" name="turma" required data-msg="Escolha uma data.">' +
     '<span><span class="data"></span> <span class="dia"></span></span><span class="vagas"></span>';
   l.querySelector('input').value = t ? t.chave : '';
-  l.querySelector('.data').textContent = t ? t.chave : SEM_VAGA;
+  l.querySelector('.data').textContent = t ? t.chave + (t.ano ? '/' + t.ano : '') : SEM_VAGA;   // ano: API @13 em diante
   l.querySelector('.dia').textContent = t ? t.dia : '';
   l.querySelector('.vagas').textContent = t ? (t.livres === 1 ? 'Última vaga' : t.livres + ' vagas') : '';
   return l;
