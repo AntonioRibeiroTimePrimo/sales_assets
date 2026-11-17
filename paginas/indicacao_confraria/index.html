@@ -302,7 +302,12 @@ function textoResultado(r, d) {
   return ['Ele está na lista de espera.', 'Todas as datas estão cheias no momento. Quando abrir uma nova, ela aparece nesta página.'];
 }
 
-/** Portfel com patrimonio abaixo de R$ 10 mi: nada e enviado nem gravado. */
+/** Portfel com patrimonio abaixo de R$ 10 mi: a indicacao nao e enviada nem gravada; so o evento vai pra aba de log. */
+function registraRecusa() {
+  fetch(API, { method: 'POST', body: JSON.stringify({ evento: 'recusa_patrimonio', origem: 'Portfel', patrimonio: $('patrimonio').value }) })
+    .catch(function () {});   // log e best-effort: a tela de recusa aparece de qualquer jeito
+}
+
 function mostraRecusa() {
   $('resTitulo').textContent = 'Não podemos seguir com esta indicação.';
   $('resTexto').textContent = 'A vaga de cortesia da Confraria para clientes Portfel é para empresários com patrimônio líquido ' +
@@ -345,7 +350,7 @@ form.addEventListener('submit', function (e) {
   e.preventDefault();
   var msg = validaPasso(passo);
   if (msg) { erro(msg); return; }
-  if (passo === 1 && !$('patrimonio').disabled && $('patrimonio').value === PATRIMONIO_RECUSADO) { mostraRecusa(); return; }
+  if (passo === 1 && !$('patrimonio').disabled && $('patrimonio').value === PATRIMONIO_RECUSADO) { registraRecusa(); mostraRecusa(); return; }
   if (passo < ULTIMO) mostraPasso(passo + 1, true); else envia();
 });
 $('voltar').addEventListener('click', function () {
