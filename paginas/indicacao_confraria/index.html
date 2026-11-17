@@ -226,6 +226,14 @@ function cartaoTurma(t) {
   return l;
 }
 
+/** Datas que a origem escolhida enxerga: Portfel ve 1 a menos (a ultima vaga e do Club / Equity+). API sem livresPortfel: tudo. */
+function turmasVisiveis() {
+  if (!TURMAS || !form.querySelector('input[name=origem][value="Portfel"]:checked')) return TURMAS || [];
+  return TURMAS.map(function (t) {
+    return t.livresPortfel === undefined ? t : Object.assign({}, t, { livres: t.livresPortfel });
+  }).filter(function (t) { return t.livres > 0; });
+}
+
 function desenhaTurmas() {
   var box = $('turmas');
   box.innerHTML = '';
@@ -234,7 +242,8 @@ function desenhaTurmas() {
     box.innerHTML = '<p class="aviso">Não conseguimos carregar as datas agora. Recarregue a página em alguns minutos.</p>';
     return;
   }
-  (TURMAS.length ? TURMAS : [null]).forEach(function (t) { box.appendChild(cartaoTurma(t)); });
+  var ts = turmasVisiveis();
+  (ts.length ? ts : [null]).forEach(function (t) { box.appendChild(cartaoTurma(t)); });
 }
 
 function dados() {
@@ -280,7 +289,7 @@ function recebeu(r) {
   var txt = textoResultado(r, dados());
   $('resTitulo').textContent = txt[0];
   $('resTexto').textContent = txt[1];
-  $('outraData').hidden = !(r.status === 'Lista de espera' && TURMAS.length);
+  $('outraData').hidden = !(r.status === 'Lista de espera' && turmasVisiveis().length);
   mostraTela('resultado');
 }
 
@@ -327,7 +336,10 @@ function mascaraFone(v) {
 }
 $('whatsapp').addEventListener('input', function (e) { e.target.value = mascaraFone(e.target.value); });
 form.addEventListener('input', function () { erro(''); });   // aviso some quando a pessoa corrige
-form.addEventListener('change', function () { erro(''); atualizaPatrimonio(); });
+form.addEventListener('change', function (e) {
+  erro(''); atualizaPatrimonio();
+  if (e.target.name === 'origem') desenhaTurmas();   // Portfel e Equity+ veem datas diferentes
+});
 
 form.addEventListener('submit', function (e) {
   e.preventDefault();
